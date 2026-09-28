@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bleepit — tiny, fast, multilingual profanity checker</title>
+<meta name="description" content="bleepit is a zero-dependency, isomorphic profanity checker. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de built in." />
+<style>
+  :root { --fg: #1a1a1a; --muted: #666; --line: #e5e5e5; --bg: #fff;
+          --soft: #f6f6f6; --accent: #0f62fe; --good: #0e7c3e; --bad: #c81e1e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--fg); background: var(--bg);
+         font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+  nav { border-bottom: 1px solid var(--line); position: sticky; top: 0;
+        background: rgba(255,255,255,.94); backdrop-filter: blur(6px); z-index: 5; }
+  nav .wrap { display: flex; gap: 18px; align-items: center; height: 56px;
+              overflow-x: auto; white-space: nowrap; }
+  nav b { font-size: 18px; margin-right: auto; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav a:hover { color: var(--fg); }
+  header.hero { padding: 64px 0 40px; }
+  h1 { font-size: 44px; line-height: 1.1; margin: 0 0 12px; }
+  h1 code { font-size: .75em; background: var(--soft); padding: 2px 10px;
+            border-radius: 8px; border: 1px solid var(--line); }
+  .tag { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; padding: 0; }
+  .chips li { list-style: none; font-size: 13px; background: var(--soft);
+              border: 1px solid var(--line); border-radius: 999px;
+              padding: 3px 12px; }
+  pre { background: #111; color: #eee; padding: 14px 16px; border-radius: 10px;
+        overflow-x: auto; font-size: 14px; }
+  pre.light { background: var(--soft); color: var(--fg);
+              border: 1px solid var(--line); }
+  code.inline { background: var(--soft); border: 1px solid var(--line);
+                border-radius: 5px; padding: 1px 6px; font-size: .88em; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .btn { display: inline-block; padding: 9px 20px; border-radius: 8px;
+         font-size: 15px; text-decoration: none; border: 1px solid var(--line); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  section { padding: 36px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 28px; margin: 0 0 14px; }
+  h3 { font-size: 19px; margin: 26px 0 8px; }
+  p, li { max-width: 70ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 12px 0; }
+  th, td { text-align: left; border: 1px solid var(--line); padding: 7px 10px; }
+  th { background: var(--soft); }
+  textarea { width: 100%; min-height: 96px; font: inherit; padding: 10px 12px;
+             border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+  .demo-grid { display: grid; gap: 14px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+  .presets button, .maskrow input { font: inherit; font-size: 14px; }
+  .presets button { background: var(--soft); border: 1px solid var(--line);
+                   border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .presets button:hover { border-color: var(--accent); color: var(--accent); }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px;
+          background: var(--soft); border: 1px solid var(--line);
+          border-radius: 8px; padding: 10px 14px; }
+  .opts label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  .maskrow { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+  .maskrow input { width: 44px; text-align: center; padding: 4px;
+                   border: 1px solid var(--line); border-radius: 6px; }
+  .verdict { display: inline-block; font-weight: 700; letter-spacing: .06em;
+             font-size: 13px; padding: 4px 14px; border-radius: 999px; }
+  .verdict[data-state="good"] { background: #e3f4e9; color: var(--good); }
+  .verdict[data-state="bad"] { background: #fde7e7; color: var(--bad); }
+  .meta { color: var(--muted); font-size: 13px; }
+  .out { background: var(--soft); border: 1px solid var(--line);
+         border-radius: 8px; padding: 10px 14px; white-space: pre-wrap;
+         word-break: break-word; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 60px;
+           color: var(--muted); font-size: 14px; }
+  details { border: 1px solid var(--line); border-radius: 8px;
+            padding: 10px 14px; margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <b>bleepit</b>
+  <a href="#demo">Demo</a><a href="#install">Install</a><a href="#api">API</a>
+  <a href="#languages">Languages</a><a href="#guides">Guides</a><a href="#faq">FAQ</a>
+  <a href="https://www.npmjs.com/package/bleepit">npm</a>
+</div></nav>
+
+<div class="wrap">
+
+<header class="hero">
+  <h1><code>bleepit</code></h1>
+  <p class="tag">A super lightweight, fast, language-agnostic profanity checker.
+     Zero dependencies. Runs in Node, browsers, Deno, Bun, and workers.</p>
+  <ul class="chips">
+    <li>~2.7 kB gzip</li><li>0 dependencies</li><li>one O(n) scan</li>
+    <li>~17 MB/s</li><li>en · es · fr · de built in</li><li>leet + elongation + diacritic tolerant</li>
+  </ul>
+  <pre>npm i bleepit   # pnpm add bleepit · bun add bleepit · deno add npm:bleepit</pre>
+  <div class="btns">
+    <a class="btn primary" href="#demo">Try the live demo</a>
+    <a class="btn" href="#install">Read the docs</a>
+  </div>
+</header>
+
+<section id="demo">
+  <h2>Live demo</h2>
+  <p>Runs 100% in your browser using the real library bundle — nothing is sent anywhere.</p>
+  <div class="demo-grid">
+    <div class="presets">
+      <button id="preset-clean" type="button">Clean</button>
+      <button id="preset-profane" type="button">Profane</button>
+      <button id="preset-obfuscated" type="button">Obfuscated</button>
+      <button id="preset-multilingual" type="button">Multilingual</button>
+    </div>
+    <textarea id="demo-input">What the f.u.c.k?! shiiiiiit, you b1tch @$$hole.</textarea>
+    <div class="opts">
+      <label><input type="checkbox" id="lang-en" checked /> en</label>
+      <label><input type="checkbox" id="lang-es" checked /> es</label>
+      <label><input type="checkbox" id="lang-fr" checked /> fr</label>
+      <label><input type="checkbox" id="lang-de" checked /> de</label>
+      <label><input type="checkbox" id="opt-whole" checked /> whole-word</label>
+      <label><input type="checkbox" id="opt-leet" checked /> leet</label>
+      <label><input type="checkbox" id="opt-diacritics" checked /> diacritics</label>
+      <span class="maskrow">mask <input id="opt-mask" value="*" maxlength="4" /></span>
+    </div>
+    <div><span class="verdict" id="demo-verdict" data-state="good">CLEAN</span>
+      <span class="meta" id="demo-count"></span></div>
+    <table><thead><tr><th>word</th><th>start</th><th>end</th></tr></thead>
+      <tbody id="demo-rows"></tbody></table>
+    <div class="out" id="demo-censored"></div>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Installation</h2>
+<pre>npm i bleepit
+pnpm add bleepit
+bun add bleepit
+deno add npm:bleepit</pre>
+  <p>Ships tree-shakeable ESM + CJS with types. Import only what you need:</p>
+<pre class="light">import { ProfanityChecker } from "bleepit";
+import { es } from "bleepit/lists"; // individual lists for tiny bundles</pre>
+</section>
+
+<section id="quickstart">
+  <h2>Quickstart</h2>
+<pre class="light">import { ProfanityChecker } from "bleepit";
+
+const checker = new ProfanityChecker({ languages: ["en", "es"] });
+
+checker.isProfane("What the f.u.c.k?!"); // true
+checker.isProfane("shiiiiiit");          // true (elongation)
+checker.isProfane("sh1t");               // true (leet-speak)
+checker.isProfane("the class");          // false (word boundaries)
+checker.censor("You are a b1tch");       // "You are a *****"</pre>
+</section>
+
+<section id="api">
+  <h2>API reference</h2>
+  <h3>ProfanityChecker</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">isProfane</code></td><td><code class="inline">(text) =&gt; boolean</code></td><td>Fast boolean check, early-exits on first valid match.</td></tr>
+      <tr><td><code class="inline">find</code></td><td><code class="inline">(text, limit?) =&gt; Match[]</code></td><td>All matches as <code class="inline">{ word, start, end }</code> with original-string offsets (UTF-16).</td></tr>
+      <tr><td><code class="inline">censor</code></td><td><code class="inline">(text, mask="*") =&gt; string</code></td><td>Masks profane spans; whitespace inside a span is preserved.</td></tr>
+      <tr><td><code class="inline">addWords</code></td><td><code class="inline">(words) =&gt; void</code></td><td>Adds words (any language/script) and rebuilds the automaton.</td></tr>
+      <tr><td><code class="inline">removeWords</code></td><td><code class="inline">(words) =&gt; void</code></td><td>Removes words and rebuilds the automaton.</td></tr>
+      <tr><td><code class="inline">size</code></td><td><code class="inline">number</code></td><td>Count of normalized patterns loaded.</td></tr>
+    </tbody>
+  </table>
+  <h3>Factories &amp; singleton</h3>
+<pre class="light">import { createChecker, isProfane, find, censor } from "bleepit";
+
+const mine = createChecker({ languages: ["fr"] }); // isolated instance
+isProfane("fuck"); // uses the shared default (English) instance</pre>
+  <h3>Options</h3>
+  <table>
+    <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">languages</code></td><td><code class="inline">string[]</code></td><td><code class="inline">["en"]</code></td><td>Built-in lists to load (<code class="inline">en, es, fr, de</code>).</td></tr>
+      <tr><td><code class="inline">customWords</code></td><td><code class="inline">string[]</code></td><td><code class="inline">[]</code></td><td>Extra words in any language or script.</td></tr>
+      <tr><td><code class="inline">whitelist</code></td><td><code class="inline">string[]</code></td><td><code class="inline">[]</code></td><td>Words that must never be flagged (matched against the enclosing word).</td></tr>
+      <tr><td><code class="inline">wholeWord</code></td><td><code class="inline">boolean</code></td><td><code class="inline">true</code></td><td>Match on word boundaries only. Set <code class="inline">false</code> for aggressive filtering or spaceless scripts (e.g. CJK).</td></tr>
+      <tr><td><code class="inline">leet</code></td><td><code class="inline">boolean</code></td><td><code class="inline">true</code></td><td>Map leet-speak (<code class="inline">@→a, 0→o, $→s…</code>).</td></tr>
+      <tr><td><code class="inline">stripDiacritics</code></td><td><code class="inline">boolean</code></td><td><code class="inline">true</code></td><td>Fold diacritics (<code class="inline">é→e</code>) and ligatures (<code class="inline">ß→ss</code>). Disable for max speed on plain ASCII.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="languages">
+  <h2>Languages</h2>
+  <p>The engine is unicode-aware by construction; built-in lists are compact starters — curate them for your community via <code class="inline">customWords</code>.</p>
+  <table>
+    <thead><tr><th>Code</th><th>Language</th><th>Words</th></tr></thead>
+    <tbody>
+      <tr><td><code class="inline">en</code></td><td>English (default)</td><td>66</td></tr>
+      <tr><td><code class="inline">es</code></td><td>Spanish</td><td>24</td></tr>
+      <tr><td><code class="inline">fr</code></td><td>French</td><td>17</td></tr>
+      <tr><td><code class="inline">de</code></td><td>German</td><td>16</td></tr>
+    </tbody>
+  </table>
+<pre class="light">import { createChecker } from "bleepit";
+
+// Any script works — normalization is unicode-aware:
+const c = createChecker({ languages: [], customWords: ["сука", "クソ"] });
+c.isProfane("ах ты СУКА"); // true (case-insensitive Cyrillic)
+
+// Spaceless scripts have no word boundaries — use substring mode:
+const zh = createChecker({ languages: [], customWords: ["他妈的"], wholeWord: false });</pre>
+</section>
+
+<section id="guides">
+  <h2>Guides</h2>
+  <h3>Word boundaries (the Scunthorpe problem)</h3>
+  <p>With <code class="inline">wholeWord: true</code> (default), matches must sit on word boundaries checked against the <em>original</em> text, so separators still split words while <code class="inline">f.u.c.k</code> is caught:</p>
+<pre class="light">checker.isProfane("the class");      // false
+checker.isProfane("Scunthorpe");     // false
+checker.isProfane("fuck you");       // true
+checker.isProfane("f.u.c.k you");    // true</pre>
+  <h3>Whitelisting</h3>
+<pre class="light">const c = createChecker({ whitelist: ["arsenal"] });
+c.isProfane("arsenal"); // false</pre>
+  <h3>Runtime updates</h3>
+<pre class="light">checker.addWords(["heck"]);       // community-driven lists
+checker.removeWords(["damn"]);    // tune false positives away</pre>
+  <h3>Censoring</h3>
+<pre class="light">checker.censor("You are a b1tch", "*"); // "You are a *****"
+checker.censor("oh shit", "#");           // "oh ####"</pre>
+</section>
+
+<section id="integrations">
+  <h2>Integrations</h2>
+  <h3>React (comment box)</h3>
+<pre class="light">import { useMemo, useState } from "react";
+import { createChecker } from "bleepit";
+
+const checker = createChecker({ languages: ["en"] });
+
+function CommentBox() {
+  const [value, setValue] = useState("");
+  const bad = useMemo(() =&gt; checker.isProfane(value), [value]);
+  return (
+    &lt;&gt;
+      &lt;textarea value={value} onChange={(e) =&gt; setValue(e.target.value)} /&gt;
+      {bad &amp;&amp; &lt;p&gt;Please keep it clean.&lt;/p&gt;}
+    &lt;/&gt;
+  );
+}</pre>
+  <h3>Express middleware</h3>
+<pre class="light">import { createChecker } from "bleepit";
+
+const checker = createChecker();
+app.post("/comments", (req, res, next) =&gt; {
+  if (checker.isProfane(String(req.body.text ?? ""))) {
+    return res.status(422).json({ error: "Inappropriate content." });
+  }
+  next();
+});</pre>
+  <h3>Deno</h3>
+<pre class="light">import { isProfane } from "npm:bleepit";
+
+Deno.serve((req) =&gt; {
+  const url = new URL(req.url);
+  const clean = !isProfane(url.searchParams.get("q") ?? "");
+  return Response.json({ clean });
+});</pre>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <ol>
+    <li><strong>Normalize</strong> — one pass folds case, diacritics (NFKD), ligatures (<code class="inline">ß→ss</code>), and leet-speak, drops separators, and records original offsets.</li>
+    <li><strong>Scan</strong> — an Aho-Corasick automaton matches all patterns in a single <code class="inline">O(n)</code> pass, independent of dictionary size.</li>
+    <li><strong>Repeat tolerance</strong> — a repeated char takes a direct trie transition when one exists (keeps <code class="inline">as ≠ ass</code>) and is otherwise skipped (catches <code class="inline">fuuuuck</code>).</li>
+    <li><strong>Validate</strong> — boundaries and whitelist are checked against the original text, so <code class="inline">f.u.c.k</code> flags while <code class="inline">class</code> does not.</li>
+  </ol>
+</section>
+
+<section id="performance">
+  <h2>Performance</h2>
+  <p>Measured on the minified bundle (Node 22, 123 patterns): ~5.5 ms per 97 KB (~17 MB/s). Tips:</p>
+  <ul>
+    <li>Reuse one instance — construction builds the automaton once; queries share it.</li>
+    <li>Use <code class="inline">isProfane</code> for boolean gates — it early-exits on the first valid match.</li>
+    <li>Disable <code class="inline">stripDiacritics</code> if your input is plain ASCII.</li>
+    <li>Adding languages or thousands of custom words costs nothing at query time.</li>
+  </ul>
+</section>
+
+<section id="limitations">
+  <h2>Limitations</h2>
+  <p><strong>Single-character masking</strong> (<code class="inline">f*ck</code>, <code class="inline">sh*t</code>) is intentionally out of scope: a <code class="inline">*</code> can stand for any letter, so reliable matching needs edit-distance search, which would break the lightweight / <code class="inline">O(n)</code> guarantees. Workaround: add the variants you care about via <code class="inline">customWords</code>.</p>
+  <p>No filter is perfect — pair automated checks with reporting and human review for high-stakes moderation.</p>
+</section>
+
+<section id="faq">
+  <h2>FAQ</h2>
+  <details><summary>Does it work in the browser / workers / edge runtimes?</summary>
+    <p>Yes. Zero dependencies and no Node APIs — it runs anywhere JavaScript runs, including Cloudflare Workers and Deno Deploy.</p></details>
+  <details><summary>Why is “Scunthorpe” clean but “f.u.c.k” flagged?</summary>
+    <p>Boundaries are checked against the original text. Letters block a match (<code class="inline">class</code>), while separators are obfuscation and get skipped.</p></details>
+  <details><summary>Can I add my own language?</summary>
+    <p>Yes — <code class="inline">customWords</code> / <code class="inline">addWords()</code> accept any unicode script, and non-Latin text is matched case-insensitively.</p></details>
+  <details><summary>What about Chinese / Japanese / Thai (no spaces)?</summary>
+    <p>Use <code class="inline">wholeWord: false</code> for those instances, since spaceless scripts have no word boundaries to check.</p></details>
+  <details><summary>Does censoring preserve positions?</summary>
+    <p><code class="inline">find()</code> returns original-string offsets so you can highlight, redact, or audit matches yourself; <code class="inline">censor()</code> masks in place and preserves whitespace.</p></details>
+  <details><summary>How big is it?</summary>
+    <p>Core bundle is ~6 kB minified (~2.7 kB gzip). Extra language lists are separate entrypoints (<code class="inline">bleepit/lists</code>) so you only ship what you load.</p></details>
+</section>
+
+</div>
+
+<footer><div class="wrap">
+  <p>bleepit · MIT · <a href="https://www.npmjs.com/package/bleepit">npm</a> ·
+     Works with npm, pnpm, Bun, and Deno.</p>
+</div></footer>
+
+<script src="./bleepit.bundle.js"></script>
+</body>
+</html>

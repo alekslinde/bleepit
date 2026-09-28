@@ -1,0 +1,20 @@
+/** Starter French wordlist — extend via `customWords`. */
+export const fr: string[] = [
+  "bite",
+  "bordel",
+  "chier",
+  "chiant",
+  "con",
+  "connard",
+  "connasse",
+  "couilles",
+  "encule",
+  "merde",
+  "niquer",
+  "pute",
+  "putain",
+  "putes",
+  "salaud",
+  "salope",
+  "sodomie",
+];
