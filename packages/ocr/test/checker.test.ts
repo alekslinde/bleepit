@@ -43,13 +43,61 @@ describe("ImageProfanityChecker", () => {
     expect(match!.words.map((x) => x.text)).toEqual(["shit"]);
   });
 
-  it("does not match across the word separator", async () => {
-    // "grass" + "assault" must not yield a match from the joined boundary,
-    // and neither word contains standalone profanity.
+  it("does not let adjacent words concatenate into a match", async () => {
+    // bleepit drops non-alphanumerics before matching (so `f.u.c.k` is
+    // caught), which means any separator between joined words disappears and
+    // "sh" + "it" would scan as one word. Scanning per-word prevents that.
     const ic = createImageChecker({
-      engine: stubEngine([w("grass", 0), w("assault", 1)]),
+      engine: stubEngine([w("sh", 0), w("it", 1)]),
     });
     expect(await ic.find(IMAGE)).toEqual([]);
+  });
+
+  it("still flags a whole word that happens to sit beside another", async () => {
+    const ic = createImageChecker({
+      engine: stubEngine([w("grass", 0), w("shit", 1)]),
+    });
+    const matches = await ic.find(IMAGE);
+    expect(matches.map((m) => m.text)).toEqual(["shit"]);
+  });
+
+  it("reports the source text as OCR read it", async () => {
+    const ic = createImageChecker({ engine: stubEngine([w("sh1t", 0)]) });
+    const [match] = await ic.find(IMAGE);
+    expect(match?.text).toBe("sh1t");
+    expect(match?.word).toBe("shit");
+  });
+
+  describe("crossWord", () => {
+    it("matches across two boxes when enabled", async () => {
+      const ic = createImageChecker({
+        engine: stubEngine([w("sh", 0), w("it", 1)]),
+        crossWord: true,
+      });
+      const [match] = await ic.find(IMAGE);
+      expect(match).toBeDefined();
+      expect(match!.boxes).toHaveLength(2);
+      expect(match!.words.map((x) => x.text)).toEqual(["sh", "it"]);
+    });
+
+    it("takes the lowest confidence across the spanned words", async () => {
+      const ic = createImageChecker({
+        engine: stubEngine([w("sh", 0, 90), w("it", 1, 64)]),
+        crossWord: true,
+      });
+      const [match] = await ic.find(IMAGE);
+      expect(match?.confidence).toBe(64);
+    });
+
+    it("merges a split match into one redaction box", async () => {
+      const ic = createImageChecker({
+        engine: stubEngine([w("sh", 0), w("it", 1)]),
+        crossWord: true,
+      });
+      expect(await ic.redact(IMAGE)).toEqual([
+        { x0: 0, y0: 0, x1: 18, y1: 10 },
+      ]);
+    });
   });
 
   it("carries the lowest confidence of the spanned words", async () => {
@@ -98,6 +146,23 @@ describe("ImageProfanityChecker", () => {
     });
     expect(await ic.find(IMAGE)).toHaveLength(2);
     expect(await ic.find(IMAGE, 1)).toHaveLength(1);
+  });
+
+  it("returns nothing for a non-positive limit", async () => {
+    const ic = createImageChecker({
+      engine: stubEngine([w("shit", 0), w("bitch", 1)]),
+    });
+    expect(await ic.find(IMAGE, 0)).toEqual([]);
+    expect(await ic.find(IMAGE, -1)).toEqual([]);
+  });
+
+  it("caps the limit across segments, not within each one", async () => {
+    // Per-word scanning means three separate segments; a naive per-segment
+    // limit would return three matches for a limit of 2.
+    const ic = createImageChecker({
+      engine: stubEngine([w("shit", 0), w("bitch", 1), w("shit", 2)]),
+    });
+    expect(await ic.find(IMAGE, 2)).toHaveLength(2);
   });
 
   it("returns no matches for an empty page", async () => {

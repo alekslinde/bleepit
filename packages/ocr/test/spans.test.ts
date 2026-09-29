@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { joinWords, mergeBoxes, wordsInRange } from "../src/spans.js";
+import {
+  joinSeparately,
+  joinWords,
+  mergeBoxes,
+  wordsInRange,
+} from "../src/spans.js";
 import type { OcrWord } from "../src/types.js";
 
 /** Terse word factory — box values are arbitrary but distinguishable. */
@@ -45,6 +50,26 @@ describe("joinWords", () => {
     const second = spans[1];
     expect(second).toBeDefined();
     expect(text.slice(second!.start, second!.end)).toBe("damn");
+  });
+});
+
+describe("joinSeparately", () => {
+  it("yields one segment per word, each offset from zero", () => {
+    const segments = joinSeparately([w("hello", 0), w("world", 1)]);
+    expect(segments.map((s) => s.text)).toEqual(["hello", "world"]);
+    for (const segment of segments) {
+      const span = segment.spans[0];
+      expect(span).toBeDefined();
+      expect(segment.text.slice(span!.start, span!.end)).toBe(span!.word.text);
+    }
+  });
+
+  it("skips empty words", () => {
+    expect(joinSeparately([w("a", 0), w("", 1)])).toHaveLength(1);
+  });
+
+  it("returns nothing for no words", () => {
+    expect(joinSeparately([])).toEqual([]);
   });
 });
 

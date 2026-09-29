@@ -1,5 +1,11 @@
 import { ProfanityChecker } from "bleepit";
-import { joinWords, mergeBoxes, wordsInRange } from "./spans.js";
+import {
+  joinSeparately,
+  joinWords,
+  mergeBoxes,
+  wordsInRange,
+  type Segment,
+} from "./spans.js";
 import type {
   BBox,
   ImageCheckerOptions,
@@ -17,15 +23,14 @@ const DEFAULT_MIN_CONFIDENCE = 60;
  * a `ProfanityChecker`, and report each match with the boxes it came from.
  *
  * The OCR engine is injected rather than bundled, so this package keeps zero
- * runtime dependencies and you choose what to pay for — local WASM OCR via
- * `@bleepit/ocr/tesseract`, or your own adapter over a cloud OCR API.
+ * runtime dependencies and you choose what to pay for — local WASM OCR or a
+ * cloud OCR API, behind the same two-method {@link OcrEngine} interface.
  *
  * @example
  * ```ts
  * import { createImageChecker } from "@bleepit/ocr";
- * import { tesseract } from "@bleepit/ocr/tesseract";
  *
- * const ic = createImageChecker({ engine: tesseract({ langs: ["eng"] }) });
+ * const ic = createImageChecker({ engine: myOcrEngine });
  * const matches = await ic.find(screenshot);
  * ```
  *
@@ -38,11 +43,13 @@ export class ImageProfanityChecker {
   private readonly engine: OcrEngine;
   private readonly checker: ProfanityCheckerLike;
   private readonly minConfidence: number;
+  private readonly crossWord: boolean;
 
   constructor(options: ImageCheckerOptions) {
     this.engine = options.engine;
     this.checker = options.checker ?? new ProfanityChecker();
     this.minConfidence = options.minConfidence ?? DEFAULT_MIN_CONFIDENCE;
+    this.crossWord = options.crossWord ?? false;
   }
 
   /** Fast boolean check. Still pays for a full OCR pass. */
@@ -62,27 +69,36 @@ export class ImageProfanityChecker {
    * (a queue, a cache, a different process) to avoid recognizing twice.
    */
   findInWords(words: OcrWord[], limit?: number): ImageMatch[] {
-    const usable = words.filter((w) => w.confidence >= this.minConfidence);
-    const { text, spans } = joinWords(usable);
-    if (text === "") return [];
+    if (limit !== undefined && limit <= 0) return [];
+    const cap = limit ?? Number.POSITIVE_INFINITY;
 
-    const matches =
-      limit === undefined
-        ? this.checker.find(text)
-        : this.checker.find(text, limit);
+    const usable = words.filter((w) => w.confidence >= this.minConfidence);
+    const segments: Segment[] = this.crossWord
+      ? [joinWords(usable)]
+      : joinSeparately(usable);
 
     const out: ImageMatch[] = [];
-    for (const m of matches) {
-      const spanned = wordsInRange(spans, m.start, m.end);
-      out.push({
-        ...m,
-        words: spanned,
-        boxes: spanned.map((w) => w.bbox),
-        confidence: spanned.reduce(
-          (lowest, w) => Math.min(lowest, w.confidence),
-          Number.POSITIVE_INFINITY,
-        ),
-      });
+    for (const { text, spans } of segments) {
+      if (text === "") continue;
+      // Each segment carries its own offsets; ask only for what is still
+      // needed so an early segment cannot overshoot the overall limit.
+      for (const m of this.checker.find(text, cap - out.length)) {
+        const spanned = wordsInRange(spans, m.start, m.end);
+        out.push({
+          ...m,
+          words: spanned,
+          boxes: spanned.map((w) => w.bbox),
+          text: text.slice(m.start, m.end + 1),
+          confidence:
+            spanned.length === 0
+              ? 0
+              : spanned.reduce(
+                  (lowest, w) => Math.min(lowest, w.confidence),
+                  Number.POSITIVE_INFINITY,
+                ),
+        });
+      }
+      if (out.length >= cap) break;
     }
     return out;
   }

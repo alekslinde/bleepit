@@ -6,10 +6,18 @@ import type { BBox, OcrWord } from "./types.js";
  * it, so we join the words ourselves and keep the span each one occupies.
  * Matches are then resolved back to words by range overlap.
  *
- * Words are joined with a single space. That separator is load-bearing: the
- * checker's `wholeWord` mode treats it as a boundary, so `ass` in "grass ass"
- * matches once, not twice. Joining with no separator would glue neighbouring
- * words into false positives.
+ * A caveat that shapes the whole design: the separator between joined words
+ * is *not* a match boundary. bleepit's normalizer drops every non-alphanumeric
+ * character before matching — that is what lets it catch `f.u.c.k` — so a
+ * space, newline or pipe between two words vanishes and the letters run
+ * together. `"sh"` + `"it"` in adjacent boxes scans as `shit`. No separator
+ * character avoids this; only a letter would, and injecting letters would
+ * corrupt offsets and invent different false positives.
+ *
+ * Hence `joinSeparately`, the default, which scans one word at a time so
+ * fragments cannot combine. `joinWords` keeps the concatenating behaviour for
+ * callers who would rather catch profanity that OCR split across two boxes,
+ * and accept the false positives that come with it.
  */
 
 /** A word plus the half-open `[start, end)` range it occupies in the text. */
@@ -28,9 +36,34 @@ export interface JoinedText {
 const SEPARATOR = " ";
 
 /**
+ * One scannable unit: text to match against, and the spans within it.
+ * `joinSeparately` yields one per word, `joinWords` a single combined one.
+ */
+export type Segment = JoinedText;
+
+/**
+ * Each word as its own segment, so neighbouring words can never concatenate
+ * into a match. Words with empty text are skipped.
+ */
+export function joinSeparately(words: OcrWord[]): Segment[] {
+  const out: Segment[] = [];
+  for (const word of words) {
+    if (word.text === "") continue;
+    out.push({
+      text: word.text,
+      spans: [{ word, start: 0, end: word.text.length }],
+    });
+  }
+  return out;
+}
+
+/**
  * Join words into a single string, recording each word's offset range.
  * Words with empty text are skipped — they would produce zero-width spans
  * that can never overlap a match.
+ *
+ * Note that this lets adjacent words combine into a match; see the module
+ * comment above.
  */
 export function joinWords(words: OcrWord[]): JoinedText {
   const spans: WordSpan[] = [];

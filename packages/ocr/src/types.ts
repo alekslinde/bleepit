@@ -36,8 +36,8 @@ export interface OcrResult {
 }
 
 /**
- * The single interface an OCR backend must satisfy. Implement this to plug in
- * a cloud OCR API; `@bleepit/ocr/tesseract` implements it for local WASM OCR.
+ * The single interface an OCR backend must satisfy. Implement it to plug in
+ * local WASM OCR or a cloud OCR API — this package ships no engine itself.
  */
 export interface OcrEngine {
   recognize(image: ImageInput): Promise<OcrResult>;
@@ -45,15 +45,25 @@ export interface OcrEngine {
   terminate?(): Promise<void>;
 }
 
-/** A profanity match, plus where it appeared on the page. */
+/**
+ * A profanity match, plus where it appeared on the page.
+ *
+ * Inherited `start` and `end` are offsets into the scanned segment, not into
+ * any page-wide string: by default each OCR word is scanned on its own, so
+ * they are offsets within `words[0].text`. Use `boxes` to locate a match on
+ * the image and `text` to see what was matched — those are meaningful in
+ * both modes.
+ */
 export interface ImageMatch extends Match {
   /**
-   * Boxes of every OCR word the match spans — more than one when profanity
-   * is split across words, or when OCR breaks a word in two.
+   * Boxes of every OCR word the match spans — more than one only when
+   * `crossWord` is enabled and a match runs across two boxes.
    */
   boxes: BBox[];
   /** The OCR words the match spans, in reading order. */
   words: OcrWord[];
+  /** The source text that matched, as OCR read it (e.g. `"sh1t"`). */
+  text: string;
   /** Lowest confidence among the spanned words — a rough match-quality hint. */
   confidence: number;
 }
@@ -72,6 +82,19 @@ export interface ImageCheckerOptions {
    * for clean screenshots where you would rather not miss anything.
    */
   minConfidence?: number;
+  /**
+   * Allow a match to span more than one OCR word. Default `false`.
+   *
+   * bleepit strips non-alphanumerics before matching (so `f.u.c.k` is
+   * caught), which means the gap between two OCR words disappears and their
+   * letters run together — `"sh"` and `"it"` in adjacent boxes would scan as
+   * `shit`. Scanning each word alone is therefore the default.
+   *
+   * Set `true` when OCR splitting one word across boxes is the bigger worry
+   * than neighbouring words colliding — noisy scans of stylized type, say.
+   * Expect more false positives.
+   */
+  crossWord?: boolean;
 }
 
 /**

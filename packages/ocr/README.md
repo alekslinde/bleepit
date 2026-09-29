@@ -22,9 +22,28 @@ const ic = createImageChecker({
 });
 
 await ic.isProfane(image); // boolean
-await ic.find(image); // ImageMatch[] — word, offsets, boxes, confidence
+await ic.find(image); // ImageMatch[] — word, text, boxes, confidence
 await ic.redact(image); // BBox[] — one merged box per match
 ```
+
+## Word fragments and the `crossWord` tradeoff
+
+bleepit strips non-alphanumerics before matching — that is what catches
+`f.u.c.k`. The consequence for OCR is that **any gap between two recognized
+words disappears**, so `"sh"` and `"it"` in adjacent boxes would scan as one
+word. No separator character avoids this; only a letter would, and injecting
+letters corrupts offsets.
+
+So each OCR word is scanned on its own by default. Neighbouring words cannot
+collide, at the cost of missing profanity that OCR split across two boxes.
+Flip it when a split word is the likelier failure:
+
+```ts
+createImageChecker({ engine, crossWord: true });
+```
+
+Expect more false positives in that mode — it is the right choice for noisy
+scans of stylized type, and the wrong one for dense screenshots of prose.
 
 ## Bring your own engine
 
