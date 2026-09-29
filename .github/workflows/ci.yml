@@ -22,7 +22,9 @@ jobs:
       # Report every failing version, not just the first to fall over.
       fail-fast: false
       matrix:
-        node: ["20", "22", "24"]
+        # 22.13 is the floor for pnpm itself, which imports node:sqlite — not
+        # a limit of the libraries, which target ES2020 and use no Node APIs.
+        node: ["22", "24"]
     steps:
       - uses: actions/checkout@v4
 
@@ -69,8 +71,8 @@ jobs:
       - name: Import built ESM and check core behavior
         run: node .github/scripts/smoke.mjs
 
-  # Changesets requires Node 22.11+ (the libraries do not), so this job pins a
-  # version rather than riding the matrix.
+  # Single-version job: this checks repo bookkeeping, not runtime behavior,
+  # so there is nothing for a matrix to tell us.
   changeset:
     name: changeset present
     runs-on: ubuntu-latest

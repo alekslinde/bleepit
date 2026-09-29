@@ -7,10 +7,10 @@ patch we have to turn down.
 
 ## Getting set up
 
-Requires Node 22.11+ and [pnpm](https://pnpm.io) 10+ — the floor comes from
-the release tooling, not the libraries. The published packages target ES2020
-and use no Node APIs, so they run anywhere; CI tests them on Node 20, 22
-and 24.
+Requires Node 22.13+ and [pnpm](https://pnpm.io) 11+ — the floor is pnpm's
+own, not the libraries'. The published packages target ES2020 and use no Node
+APIs, so they run anywhere a modern runtime does, including browsers, Deno,
+Bun and Workers. CI builds and tests on Node 22 and 24.
 
 If you have [Corepack](https://nodejs.org/api/corepack.html) enabled, the
 pinned pnpm version is picked up automatically from `packageManager`.
@@ -152,7 +152,7 @@ Every PR runs:
 
 | Job | What it catches |
 |---|---|
-| `test` on Node 20, 22, 24 | Lint, tests and build on each supported version |
+| `test` on Node 22, 24 | Build, lint and tests on each supported version |
 | `smoke` | Breakage in the *built* output — bad entry points, broken `dts`, dropped exports. The unit suites run against `src/`, so they cannot see this |
 | `changeset` | A user-visible change with no changelog entry. Advisory only — it reports, it does not block |
 
