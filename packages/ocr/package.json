@@ -21,8 +21,10 @@
   ],
   "scripts": {
     "build": "tsup",
+    "pretest": "pnpm --filter bleepit build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prelint": "pnpm --filter bleepit build",
     "lint": "tsc --noEmit",
     "prepublishOnly": "pnpm build"
   },

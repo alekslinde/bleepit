@@ -37,13 +37,15 @@ jobs:
       # the manifests, rather than silently resolving something else.
       - run: pnpm install --frozen-lockfile
 
+      # Build first: @bleepit/ocr resolves `bleepit` through its published
+      # types, so on a clean checkout there is nothing to type-check against
+      # until the dependency has been built. This also catches what checking
+      # source cannot — broken dts generation and bad entry points.
+      - run: pnpm build
+
       - run: pnpm lint
 
       - run: pnpm test
-
-      # Catches what type-checking source cannot: broken dts generation,
-      # bad entry points, and anything that only surfaces when bundled.
-      - run: pnpm build
 
   # The published artifact is what users actually run, so exercise it rather
   # than trusting that a green test suite implies a working package.
