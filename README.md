@@ -4,7 +4,7 @@ Monorepo for bleepit and its companion packages.
 
 | Package | Description |
 |---|---|
-| [`bleepit`](packages/bleepit) | Lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic. |
+| [`bleepit`](packages/core) | Lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic. |
 | [`@bleepit/ocr`](packages/ocr) | Profanity detection for images: OCR adapter with match-to-bounding-box mapping. Zero runtime dependencies. |
 
 ## Development

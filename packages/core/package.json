@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alekslinde/bleepit.git",
-    "directory": "packages/bleepit"
+    "directory": "packages/core"
   },
   "homepage": "https://github.com/alekslinde/bleepit#readme",
   "bugs": "https://github.com/alekslinde/bleepit/issues",
