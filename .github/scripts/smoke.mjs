@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 
-import { ProfanityChecker, censor, createChecker, isProfane } from "../../packages/bleepit/dist/index.js";
+import { ProfanityChecker, censor, createChecker, isProfane } from "../../packages/core/dist/index.js";
 import { createImageChecker } from "../../packages/ocr/dist/index.js";
 
 // --- bleepit: exports resolve and the core paths work -----------------------

@@ -6,8 +6,8 @@ on:
     # The demo is built from the library source, so a change to either can
     # alter what the page does. Everything else (tests, OCR, docs) cannot.
     paths:
-      - "packages/bleepit/site/**"
-      - "packages/bleepit/src/**"
+      - "packages/core/site/**"
+      - "packages/core/src/**"
       - ".github/workflows/pages.yml"
   # Allows a redeploy without an empty commit, e.g. after changing a setting.
   workflow_dispatch:
@@ -49,8 +49,8 @@ jobs:
       # output is correct either way — but the log flags it.
       - name: Warn if the committed bundle was stale
         run: |
-          if ! git diff --quiet -- packages/bleepit/site/bleepit.bundle.js; then
-            echo "::warning file=packages/bleepit/site/bleepit.bundle.js::\
+          if ! git diff --quiet -- packages/core/site/bleepit.bundle.js; then
+            echo "::warning file=packages/core/site/bleepit.bundle.js::\
           Committed bundle differs from a fresh build. Run 'pnpm site:build' and commit the result."
           fi
 
@@ -58,7 +58,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/bleepit/site
+          path: packages/core/site
 
   deploy:
     name: deploy to pages

@@ -47,7 +47,7 @@ pnpm --filter @bleepit/ocr test
 
 | Package | Scope |
 |---|---|
-| [`bleepit`](packages/bleepit) | The profanity checker. Aho-Corasick automaton, normalizer, wordlists. |
+| [`bleepit`](packages/core) | The profanity checker. Aho-Corasick automaton, normalizer, wordlists. |
 | [`@bleepit/ocr`](packages/ocr) | Image support: OCR adapter and match-to-box mapping. |
 
 ## What belongs here
@@ -66,7 +66,7 @@ Things that do belong:
 - Wordlist corrections and additions, per language
 - Normalizer improvements (new obfuscation patterns, scripts, folds)
 - Performance work, with a benchmark showing the difference
-- New language lists under `packages/bleepit/src/lists/`
+- New language lists under `packages/core/src/lists/`
 - OCR engine adapters for `@bleepit/ocr`
 
 Things that do not:
@@ -83,7 +83,7 @@ Things that do not:
 
 ## Wordlists
 
-Wordlists live in `packages/bleepit/src/lists/` and contain profane language
+Wordlists live in `packages/core/src/lists/` and contain profane language
 by necessity — that is expected content here, not a lapse.
 
 They are deliberately compact starters, not exhaustive dictionaries. The
@@ -186,7 +186,7 @@ push.
 
 ### The demo site
 
-`packages/bleepit/site/` deploys to GitHub Pages on any push to `main` that
+`packages/core/site/` deploys to GitHub Pages on any push to `main` that
 touches the site or the library source.
 
 The workflow rebuilds the bundle rather than deploying the committed one, so
