@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# Two pushes to main must not race: one run publishing while another versions
+# the same packages can leave a tag without a tarball. Never cancel a run that
+# may already be mid-publish — queue behind it instead.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: version or publish
+    runs-on: ubuntu-latest
+    permissions:
+      # changesets/action opens and updates the "Version Packages" PR, and
+      # pushes the version commit + tags on release.
+      contents: write
+      pull-requests: write
+      # Required for npm provenance: the OIDC token is what lets npm attest
+      # that this tarball was built from this commit, in this workflow.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # changesets reads tags to work out what has already been released.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          # Writes the .npmrc that NODE_AUTH_TOKEN below authenticates against.
+          # Without it, publish fails with ENEEDAUTH despite the secret being set.
+          registry-url: "https://registry.npmjs.org"
+
+      - run: pnpm install --frozen-lockfile
+
+      # Publishing an artifact that was never tested is how a broken release
+      # reaches users. Same gates as CI, run again here because a green check
+      # on the PR does not prove the merge commit is green.
+      - run: pnpm build
+      - run: pnpm lint
+      - run: pnpm test
+
+      # Two modes, decided by whether unconsumed changesets exist:
+      #   - changesets present -> opens/updates a "Version Packages" PR
+      #   - none present (that PR was merged) -> runs `publish`
+      # So a release is always a reviewed, merged PR, never a direct push.
+      - name: Create version PR or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm version
+          publish: pnpm release
+          commit: "chore(config): version packages"
+          title: "chore(config): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Consumed by npm itself, not by changesets: turns on the provenance
+          # attestation that publishConfig requests in each manifest.
+          NPM_CONFIG_PROVENANCE: "true"
