@@ -11,9 +11,30 @@ importers:
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
+  packages/bleepit:
+    devDependencies:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(yaml@2.9.1)
+
+  packages/ocr:
+    devDependencies:
+      bleepit:
+        specifier: workspace:*
+        version: link:../bleepit
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)

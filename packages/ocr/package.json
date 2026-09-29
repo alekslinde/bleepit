@@ -1,0 +1,46 @@
+{
+  "name": "@bleepit/ocr",
+  "version": "0.1.0",
+  "description": "Profanity detection for images: OCR adapter for bleepit, with match-to-bounding-box mapping. Zero runtime dependencies, bring your own OCR engine.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "bleepit": "workspace:^"
+  },
+  "devDependencies": {
+    "bleepit": "workspace:*",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "profanity",
+    "ocr",
+    "image",
+    "moderation",
+    "bleepit",
+    "zero-dependency"
+  ]
+}
