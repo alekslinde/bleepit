@@ -1,0 +1,52 @@
+{
+  "name": "bleepit",
+  "version": "0.1.0",
+  "description": "Super lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic (Node/Browser/Deno/Bun/Workers).",
+  "type": "module",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./lists": {
+      "types": "./dist/lists/index.d.ts",
+      "import": "./dist/lists/index.js",
+      "require": "./dist/lists/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest run --run test/bench.test.ts",
+    "site:build": "esbuild site/main.ts --bundle --minify --format=iife --target=es2020 --outfile=site/bleepit.bundle.js",
+    "size": "pnpm build && gzip-size dist/index.js",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "profanity",
+    "filter",
+    "censor",
+    "aho-corasick",
+    "multilingual",
+    "zero-dependency",
+    "isomorphic"
+  ]
+}
