@@ -1,0 +1,77 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    # The demo is built from the library source, so a change to either can
+    # alter what the page does. Everything else (tests, OCR, docs) cannot.
+    paths:
+      - "packages/bleepit/site/**"
+      - "packages/bleepit/src/**"
+      - ".github/workflows/pages.yml"
+  # Allows a redeploy without an empty commit, e.g. after changing a setting.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time. Unlike the release workflow, a superseded run here is
+# genuinely obsolete: the newer commit is what should be live, and a cancelled
+# deploy leaves nothing half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Rebuild rather than deploying the committed bundle: that file is a
+      # build artifact, and a stale one would ship a demo that does not match
+      # the library it claims to demonstrate.
+      - run: pnpm site:build
+
+      # The committed bundle is supposed to track site/main.ts. If the rebuild
+      # above changed it, the two have drifted and the repo is misleading
+      # anyone reading the checked-in file. Deploy still proceeds — the built
+      # output is correct either way — but the log flags it.
+      - name: Warn if the committed bundle was stale
+        run: |
+          if ! git diff --quiet -- packages/bleepit/site/bleepit.bundle.js; then
+            echo "::warning file=packages/bleepit/site/bleepit.bundle.js::\
+          Committed bundle differs from a fresh build. Run 'pnpm site:build' and commit the result."
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/bleepit/site
+
+  deploy:
+    name: deploy to pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      # Both required by deploy-pages: it swaps the live deployment using an
+      # OIDC token rather than a stored credential.
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

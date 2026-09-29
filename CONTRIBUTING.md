@@ -12,6 +12,11 @@ own, not the libraries'. The published packages target ES2020 and use no Node
 APIs, so they run anywhere a modern runtime does, including browsers, Deno,
 Bun and Workers. CI builds and tests on Node 22 and 24.
 
+Both packages declare `engines.node: >=22` to match what CI actually
+exercises. The code itself almost certainly runs on older versions — nothing
+in it needs Node 22 — but an untested claim of support is not one worth
+publishing. Widening the range means widening the test matrix first.
+
 If you have [Corepack](https://nodejs.org/api/corepack.html) enabled, the
 pinned pnpm version is picked up automatically from `packageManager`.
 
@@ -159,12 +164,64 @@ Every PR runs:
 Run `pnpm lint && pnpm test && pnpm build` before pushing and CI rarely
 surprises you.
 
+## Releases
+
+Releases are automated and run from CI. Maintainers do not publish from a
+laptop — the token stays in the repo's secrets, and each tarball carries a
+provenance attestation tying it to the commit and workflow run that built it,
+which a local publish cannot produce.
+
+The loop, once a PR with a changeset lands on `main`:
+
+1. The release workflow opens a **"Version Packages"** PR. It applies the
+   pending changesets — bumping versions and writing `CHANGELOG.md` — and
+   nothing else.
+2. Review that PR like any other. It is the last point where a wrong bump is
+   cheap to fix.
+3. Merging it runs the workflow again. With no changesets left to consume, it
+   builds, re-runs lint and tests against the merge commit, and publishes.
+
+So a release is always a reviewed, merged PR. Nothing publishes from a direct
+push.
+
+### The demo site
+
+`packages/bleepit/site/` deploys to GitHub Pages on any push to `main` that
+touches the site or the library source.
+
+The workflow rebuilds the bundle rather than deploying the committed one, so
+the live demo cannot drift from the library it demonstrates. `bleepit.bundle.js`
+is checked in for convenience, but it is a build artifact — edit `site/main.ts`
+and run `pnpm site:build`. CI warns when the committed copy no longer matches a
+fresh build.
+
+Demo presets are held to the same standard as tests: assert against the real
+wordlist. A preset built on a word the list does not carry shows visitors a
+profanity being reported as clean, which is worse than shipping no demo.
+
+### Repository setup
+
+These live in repository settings rather than in the repo, so they are listed
+here to be found when something fails:
+
+| What | Where | Needed for |
+|---|---|---|
+| `NPM_TOKEN` | Repo → Secrets → Actions | Publishing. A granular token scoped to the published packages, read+write |
+| Pages source | Repo → Pages → **GitHub Actions** | The demo deploy. The workflow fails without it |
+| npm org | npmjs.com | Scoped packages cannot publish until the scope exists |
+
+A token that has expired surfaces as `ENEEDAUTH` on the publish step, not as
+anything more descriptive.
+
 ## Pull requests
 
 Branch from `main` as `<type>/<short-description>`, then open the PR against
 `main`. The template asks what changed, why, and how you verified it — the
 last one matters most, since "tests pass" and "I checked the built output
 behaves correctly" are different claims.
+
+`main` is protected: direct pushes are rejected, and the `test`, `smoke` and
+`changeset` checks must pass before a PR can merge.
 
 Keep unrelated changes in separate PRs. A formatting sweep bundled with a
 behavior fix makes the behavior fix unreviewable.

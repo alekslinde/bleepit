@@ -5,6 +5,20 @@
   "type": "module",
   "license": "Apache-2.0",
   "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alekslinde/bleepit.git",
+    "directory": "packages/bleepit"
+  },
+  "homepage": "https://github.com/alekslinde/bleepit#readme",
+  "bugs": "https://github.com/alekslinde/bleepit/issues",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -38,7 +52,7 @@
     "esbuild": "^0.28.2",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.11"
   },
   "keywords": [
     "profanity",

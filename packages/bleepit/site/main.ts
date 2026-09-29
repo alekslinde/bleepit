@@ -17,8 +17,10 @@ function area(id: string): HTMLTextAreaElement {
 const PRESETS: Record<string, string> = {
   clean:
     "The class discussed the Scunthorpe problem and nobody was offended.",
-  profane: "What the hell is this crap? You are an ass.",
-  obfuscated: "What the h.e.l.l?! cr@ppppp, you a$$hole.",
+  profane: "You absolute bastard. What a douche — total bollocks.",
+  // Separators, elongation and leet in one line, so the demo shows all three
+  // normalization paths rather than claiming them.
+  obfuscated: "You absolute b.a.s.t.a.r.d, what a d0uchhhhe, utter b0ll0cks.",
   multilingual: "Qué mierda! Putain! Du Idiot! Scheiße.",
 };
 
