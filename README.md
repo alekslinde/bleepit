@@ -27,6 +27,11 @@ pnpm --filter @bleepit/ocr test:watch
 Releases are managed with [changesets](https://github.com/changesets/changesets):
 `pnpm changeset` to record a change, `pnpm release` to publish.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, commit conventions, and what
+belongs in this repo — notably that `bleepit` takes no runtime dependencies.
+
 ## License
 
 Apache-2.0
