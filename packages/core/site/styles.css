@@ -179,62 +179,21 @@
            px-4 py-3.5 font-mono text-sm text-fg;
   }
 
-  /* Injected by the bundle: a non-scrolling parent for the <pre>, so the copy
-     button can be positioned against the block's visible corner. Anchoring it
-     inside the <pre> instead would scroll it out of reach on a long line. */
+  /* Injected by the bundle: holds the copy button above its code block. The
+     button sits outside the <pre> rather than over it — inside a container that
+     scrolls horizontally there is no position that stays put and clear of the
+     code. */
   .code-figure {
-    @apply relative;
+    @apply flex flex-col items-end gap-1.5;
   }
 
-  /* A bare icon in the block's top-right corner — no chrome of its own, so it
-     reads as part of the block rather than as something sitting on top of it.
-     Only the icon inside the tap target is visible.
-
-     It reaches the block's edge because anything less lets a scrolling line show
-     a sliver of text past the icon, and it takes the block's own radius so the
-     two corners it shares never read as a mix. The backdrop is translucent and
-     blurred rather than opaque: a line running underneath stays legible as text
-     instead of being clipped mid-word against a hard edge. */
-  .code-copy {
-    @apply absolute top-0 right-0 z-10 flex size-14 cursor-pointer items-center
-           justify-center rounded-[var(--radius-code)] border-0 text-muted
-           backdrop-blur-[6px] hover:text-fg;
-  }
-
-  /* Inset by the block's 1px border so the button fills the padding box, not the
-     border box — flush at `right-0` it would paint over the border's top and
-     right edges. The radius loses that same 1px to stay concentric with the
-     curve it sits inside. */
-  .code-block-light + .code-copy {
-    @apply top-px right-px rounded-[calc(var(--radius-code)-1px)] bg-soft/88;
-  }
-
-  /* The dark blocks keep their palette in both themes, so this takes the fixed
-     code tokens rather than `muted`/`fg`. */
-  .code-block + .code-copy {
-    @apply bg-code-bg/88 text-code-fg/60 hover:text-code-fg;
-  }
-
-  /* Swap the clipboard for a tick while the "copied" state is on. */
-  .code-copy[data-copied] {
-    @apply text-good;
-  }
-
-  /* The dark blocks keep their dark surface in both themes, so the tick takes
-     the dark-mode green there — the light-mode one sits at ~3.6:1 on #111. */
-  .code-block + .code-copy[data-copied] {
-    color: var(--dark-good);
-  }
-
-  .code-copy[data-copied] .code-copy-idle,
-  .code-copy:not([data-copied]) .code-copy-done {
-    @apply hidden;
-  }
-
-  /* Room for the button. Applied only once the bundle has wrapped the block, so
-     an unenhanced page keeps its original padding and no dead gutter. */
   .code-figure > :is(.code-block, .code-block-light) {
-    @apply pr-16;
+    @apply w-full;
+  }
+
+  .code-copy {
+    @apply order-first cursor-pointer rounded-md border-0 bg-transparent px-1
+           py-0.5 text-[13px] text-muted hover:text-fg hover:underline;
   }
 
   .code-inline {

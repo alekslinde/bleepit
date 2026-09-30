@@ -143,13 +143,6 @@ wide.addEventListener("change", (e) => {
 // HTML so the markup stays one <pre> per snippet, and so a visitor without the
 // bundle (or without clipboard access) sees plain, selectable code instead of a
 // dead button.
-const COPY_ICON =
-  '<svg class="code-copy-idle size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
-  '<rect x="9" y="9" width="11" height="11" rx="2"/>' +
-  '<path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>' +
-  '<svg class="code-copy-done size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
-  '<path d="M4 12.5 9 17.5 20 6.5"/></svg>';
-
 if (navigator.clipboard) {
   document.querySelectorAll("pre > code").forEach((code) => {
     const pre = code.parentElement as HTMLPreElement;
@@ -157,10 +150,7 @@ if (navigator.clipboard) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "code-copy";
-    button.innerHTML = COPY_ICON;
-    // The label doubles as the live confirmation: it is the only feedback a
-    // screen-reader user gets from the icon swap.
-    button.setAttribute("aria-label", "Copy code to clipboard");
+    button.textContent = "Copy";
 
     let reset: number | undefined;
     button.addEventListener("click", async () => {
@@ -171,19 +161,16 @@ if (navigator.clipboard) {
         // claiming a copy that did not happen.
         return;
       }
-      button.dataset.copied = "";
-      button.setAttribute("aria-label", "Copied to clipboard");
+      button.textContent = "Copied";
       clearTimeout(reset);
       reset = window.setTimeout(() => {
-        delete button.dataset.copied;
-        button.setAttribute("aria-label", "Copy code to clipboard");
+        button.textContent = "Copy";
       }, 2000);
     });
 
-    // The button is positioned against this wrapper, not the <pre>, which
-    // scrolls horizontally — anchored inside it, a long line would carry the
-    // button off the edge. The <pre> keeps its own classes (and its margin
-    // utilities) so the wrapper stays purely a positioning context.
+    // The button goes above the block, not over it: a <pre> scrolls
+    // horizontally, so anything anchored inside it either scrolls away or sits
+    // on top of the code.
     const figure = document.createElement("div");
     figure.className = "code-figure";
     pre.replaceWith(figure);
