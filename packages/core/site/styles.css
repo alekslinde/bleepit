@@ -188,18 +188,17 @@
 
   /* A bare icon in the block's top-right corner — no chrome of its own, so it
      reads as part of the block rather than as something sitting on top of it.
-     Only the icon inside the tap target is visible; the box's background matches
-     the block so a long line scrolling underneath is hidden rather than
-     colliding with the glyph.
+     Only the icon inside the tap target is visible.
 
      It reaches the block's edge because anything less lets a scrolling line show
      a sliver of text past the icon, and it takes the block's own radius so the
-     two corners it shares never read as a mix. The icon stays optically inset
-     via the padding. */
+     two corners it shares never read as a mix. The backdrop is translucent and
+     blurred rather than opaque: a line running underneath stays legible as text
+     instead of being clipped mid-word against a hard edge. */
   .code-copy {
-    @apply absolute top-0 right-0 z-10 flex h-12 w-14 cursor-pointer items-center
-           justify-center rounded-[var(--radius-code)] border-0 pr-3 text-muted
-           hover:text-fg;
+    @apply absolute top-0 right-0 z-10 flex size-14 cursor-pointer items-center
+           justify-center rounded-[var(--radius-code)] border-0 text-muted
+           backdrop-blur-[6px] hover:text-fg;
   }
 
   /* Inset by the block's 1px border so the button fills the padding box, not the
@@ -207,13 +206,13 @@
      right edges. The radius loses that same 1px to stay concentric with the
      curve it sits inside. */
   .code-block-light + .code-copy {
-    @apply top-px right-px rounded-[calc(var(--radius-code)-1px)] bg-soft;
+    @apply top-px right-px rounded-[calc(var(--radius-code)-1px)] bg-soft/88;
   }
 
   /* The dark blocks keep their palette in both themes, so this takes the fixed
      code tokens rather than `muted`/`fg`. */
   .code-block + .code-copy {
-    @apply bg-code-bg text-code-fg/60 hover:text-code-fg;
+    @apply bg-code-bg/88 text-code-fg/60 hover:text-code-fg;
   }
 
   /* Swap the clipboard for a tick while the "copied" state is on. */
