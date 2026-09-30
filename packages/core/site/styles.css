@@ -167,12 +167,6 @@
            text-muted no-underline hover:text-fg;
   }
 
-  /* Outbound links in the hero, shown as marks rather than words. */
-  .icon-link {
-    @apply inline-flex size-11 items-center justify-center rounded-lg text-muted
-           no-underline hover:text-fg;
-  }
-
   .btn {
     @apply inline-flex min-h-11 items-center rounded-lg border border-line
            px-5 text-[15px] no-underline;
