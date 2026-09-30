@@ -1,13 +1,13 @@
 # @bleepit/ocr
 
 Profanity detection for images. OCR the page, scan the recognized text with
-[bleepit](https://www.npmjs.com/package/bleepit), and get back each match with
+[@bleepit/core](https://www.npmjs.com/package/@bleepit/core), and get back each match with
 the bounding boxes it came from.
 
 Zero runtime dependencies — you bring the OCR engine.
 
 ```bash
-pnpm add @bleepit/ocr bleepit
+pnpm add @bleepit/ocr @bleepit/core
 ```
 
 ## Usage
@@ -29,8 +29,8 @@ await ic.redact(image); // BBox[] — one merged box per match
 ## Word fragments and the `crossWord` tradeoff
 
 bleepit strips non-alphanumerics before matching — that is what catches
-`f.u.c.k`. The consequence for OCR is that **any gap between two recognized
-words disappears**, so `"sh"` and `"it"` in adjacent boxes would scan as one
+`a.r.s.e`. The consequence for OCR is that **any gap between two recognized
+words disappears**, so `"ar"` and `"se"` in adjacent boxes would scan as one
 word. No separator character avoids this; only a letter would, and injecting
 letters corrupts offsets.
 
@@ -81,7 +81,7 @@ ic.findInWords(words); // synchronous, same ImageMatch[]
 **OCR output is noisier than typed text, and this raises false positives.**
 bleepit normalizes leet-speak, mapping `1`→`i` and `0`→`o`. OCR makes the same
 confusions, so the normalizer silently repairs a lot of recognition error —
-`sh1t` still matches. The cost is that OCR garbage also normalizes *toward*
+`pr1ck` still matches. The cost is that OCR garbage also normalizes *toward*
 dictionary words, and flags that would never fire on typed input.
 
 `minConfidence` (default `60`) is the main lever. Raise it for photographs and

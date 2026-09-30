@@ -1,7 +1,7 @@
 {
   "name": "@bleepit/core",
   "version": "0.2.0",
-  "description": "Super lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic (Node/Browser/Deno/Bun/Workers).",
+  "description": "Keep profanity out of your product. Fast profanity checker with wordlists you control. Zero dependencies, isomorphic (Node/Browser/Deno/Bun/Workers).",
   "type": "module",
   "license": "Apache-2.0",
   "sideEffects": false,
