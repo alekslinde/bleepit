@@ -195,6 +195,21 @@ is checked in for convenience, but it is a build artifact — edit `site/main.ts
 and run `pnpm site:build`. CI warns when the committed copy no longer matches a
 fresh build.
 
+Styling is Tailwind. Edit `site/styles.css` — the semantic colour tokens at the
+top and the component classes below it — and run `pnpm site:build`, which
+compiles `site/styles.build.css`. That file is generated and gitignored, so
+never edit or commit it. Prefer an existing token over a raw colour: each one
+is defined twice, light and dark, and a literal hex will look wrong in one of
+them.
+
+Two things the page is expected to hold to, both easy to break:
+
+- **No horizontal scroll at any width from 320px up.** Wide code blocks and
+  tables scroll inside their own container, never the page.
+- **Interactive targets are at least 44×44px, and every text colour clears
+  WCAG AA against what actually renders behind it** — including in dark mode,
+  where an accent that works on white usually does not.
+
 Demo presets are held to the same standard as tests: assert against the real
 wordlist. A preset built on a word the list does not carry shows visitors a
 profanity being reported as clean, which is worse than shipping no demo.
