@@ -6,7 +6,7 @@ import { fr } from "./fr.js";
 /**
  * Built-in wordlists by language code.
  * Import individual lists for minimal bundles:
- * `import { es } from "bleepit/lists"`.
+ * `import { es } from "@bleepit/core/lists"`.
  */
 export const WORDLISTS: Record<string, string[]> = { en, es, fr, de };
 

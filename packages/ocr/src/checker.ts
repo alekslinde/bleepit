@@ -1,4 +1,4 @@
-import { ProfanityChecker } from "bleepit";
+import { ProfanityChecker } from "@bleepit/core";
 import {
   joinSeparately,
   joinWords,

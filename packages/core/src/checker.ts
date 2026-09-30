@@ -21,7 +21,7 @@ function charAt(text: string, offset: number): string {
  *
  * @example
  * ```ts
-  * import { ProfanityChecker } from "bleepit";
+  * import { ProfanityChecker } from "@bleepit/core";
  *
  * const checker = new ProfanityChecker({ languages: ["en", "es"] });
  * checker.isProfane("What the f.u.c.k?!"); // true
