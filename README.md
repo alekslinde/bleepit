@@ -6,6 +6,7 @@ Monorepo for bleepit and its companion packages.
 |---|---|
 | [`@bleepit/core`](packages/core) | Lightweight, fast profanity checker with wordlists you control. Zero dependencies, isomorphic. |
 | [`@bleepit/ocr`](packages/ocr) | Profanity detection for images: OCR adapter with match-to-bounding-box mapping. Zero runtime dependencies. |
+| [`@bleepit/site`](packages/site) | Docs site and live demo for the packages above. Private — not published. |
 
 ## Development
 
@@ -20,8 +21,8 @@ Per-package scripts run through a filter:
 
 ```bash
 pnpm --filter @bleepit/core bench
-pnpm --filter @bleepit/core site:build
 pnpm --filter @bleepit/ocr test:watch
+pnpm site:build   # rebuild the docs site
 ```
 
 Releases are managed with [changesets](https://github.com/changesets/changesets):

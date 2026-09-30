@@ -5,11 +5,11 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@12.8.1+sha512.f64ba907507f5ceafe06c8d38e6052d0179444580ec1279ddd5bfc11cb48aa8a2644b66598e07e761da84872a9fc57d5f902b87fa49d024198d558612aabbe45",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r --filter \"!@bleepit/site\" build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "bench": "pnpm --filter @bleepit/core bench",
-    "site:build": "pnpm --filter @bleepit/core site:build",
+    "site:build": "pnpm --filter @bleepit/site site:build",
     "size": "pnpm --filter @bleepit/core size",
     "changeset": "changeset",
     "version:packages": "changeset version",
