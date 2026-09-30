@@ -143,30 +143,49 @@ wide.addEventListener("change", (e) => {
 // HTML so the markup stays one <pre> per snippet, and so a visitor without the
 // bundle (or without clipboard access) sees plain, selectable code instead of a
 // dead button.
+//
+// `text` is read at click time, not now: for the package-manager tabs the
+// snippet depends on which tab is selected when the button is pressed.
+function copyButton(text: () => string): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "code-copy";
+  button.textContent = "Copy";
+
+  let reset: number | undefined;
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(text());
+    } catch {
+      // Denied permission or an insecure context — say nothing rather than
+      // claiming a copy that did not happen.
+      return;
+    }
+    button.textContent = "Copied";
+    clearTimeout(reset);
+    reset = window.setTimeout(() => {
+      button.textContent = "Copy";
+    }, 2000);
+  });
+  return button;
+}
+
 if (navigator.clipboard) {
+  // One button per tab group, copying whichever command is on show. The panels
+  // are skipped below so they do not also get one each.
+  document.querySelectorAll(".pm-tabs").forEach((tabs) => {
+    const visible = () =>
+      Array.from(tabs.querySelectorAll<HTMLPreElement>(".pm-panel")).find(
+        (panel) => panel.offsetParent !== null,
+      );
+    tabs.querySelector('[role="tablist"]')?.append(
+      copyButton(() => visible()?.textContent ?? ""),
+    );
+  });
+
   document.querySelectorAll("pre > code").forEach((code) => {
     const pre = code.parentElement as HTMLPreElement;
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "code-copy";
-    button.textContent = "Copy";
-
-    let reset: number | undefined;
-    button.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(code.textContent ?? "");
-      } catch {
-        // Denied permission or an insecure context — say nothing rather than
-        // claiming a copy that did not happen.
-        return;
-      }
-      button.textContent = "Copied";
-      clearTimeout(reset);
-      reset = window.setTimeout(() => {
-        button.textContent = "Copy";
-      }, 2000);
-    });
+    if (pre.classList.contains("pm-panel")) return;
 
     // The button goes above the block, not over it: a <pre> scrolls
     // horizontally, so anything anchored inside it either scrolls away or sits
@@ -174,7 +193,7 @@ if (navigator.clipboard) {
     const figure = document.createElement("div");
     figure.className = "code-figure";
     pre.replaceWith(figure);
-    figure.append(pre, button);
+    figure.append(pre, copyButton(() => code.textContent ?? ""));
   });
 }
 

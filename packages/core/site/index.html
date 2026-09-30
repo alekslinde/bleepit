@@ -99,7 +99,24 @@
     <li class="chip">~2.7 kB gzip</li><li class="chip">0 dependencies</li><li class="chip">one O(n) scan</li>
     <li class="chip">~17 MB/s</li><li class="chip">en · es · fr · de starter lists</li><li class="chip">leet + elongation + diacritic tolerant</li>
   </ul>
-  <pre class="code-block"><code>npm i @bleepit/core   <span class="text-muted"># pnpm add @bleepit/core · bun add @bleepit/core · deno add npm:@bleepit/core</span></code></pre>
+  <!-- Same tab set as the install section; `name` differs so the two groups do
+       not drive each other. -->
+  <div class="pm-tabs">
+    <div role="tablist" aria-label="Package manager" class="flex flex-wrap gap-1">
+      <input type="radio" name="pm-hero" id="pm-hero-npm" class="sr-only" checked />
+      <label for="pm-hero-npm" class="pm-tab">npm</label>
+      <input type="radio" name="pm-hero" id="pm-hero-pnpm" class="sr-only" />
+      <label for="pm-hero-pnpm" class="pm-tab">pnpm</label>
+      <input type="radio" name="pm-hero" id="pm-hero-bun" class="sr-only" />
+      <label for="pm-hero-bun" class="pm-tab">bun</label>
+      <input type="radio" name="pm-hero" id="pm-hero-deno" class="sr-only" />
+      <label for="pm-hero-deno" class="pm-tab">deno</label>
+    </div>
+<pre class="code-block pm-panel" data-pm="npm"><code>npm i @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="pnpm"><code>pnpm add @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="bun"><code>bun add @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="deno"><code>deno add npm:@bleepit/core</code></pre>
+  </div>
   <div class="mt-4 flex flex-wrap gap-2.5">
     <a class="btn btn-primary" href="#demo">Try the live demo</a>
     <a class="btn" href="#install">Read the docs</a>
@@ -151,10 +168,26 @@
 
 <section id="install" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Installation</h2>
-<pre class="code-block"><code>npm i @bleepit/core
-pnpm add @bleepit/core
-bun add @bleepit/core
-deno add npm:@bleepit/core</code></pre>
+  <!-- One command per package manager. Radios rather than scripted tabs so the
+       right command is selectable with the bundle absent, and so arrow keys and
+       labels come for free. Each panel is a code block in its own right, which
+       is what lets the copy button treat it as one snippet. -->
+  <div class="pm-tabs">
+    <div role="tablist" aria-label="Package manager" class="flex flex-wrap gap-1">
+      <input type="radio" name="pm" id="pm-npm" class="sr-only" checked />
+      <label for="pm-npm" class="pm-tab">npm</label>
+      <input type="radio" name="pm" id="pm-pnpm" class="sr-only" />
+      <label for="pm-pnpm" class="pm-tab">pnpm</label>
+      <input type="radio" name="pm" id="pm-bun" class="sr-only" />
+      <label for="pm-bun" class="pm-tab">bun</label>
+      <input type="radio" name="pm" id="pm-deno" class="sr-only" />
+      <label for="pm-deno" class="pm-tab">deno</label>
+    </div>
+<pre class="code-block pm-panel" data-pm="npm"><code>npm i @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="pnpm"><code>pnpm add @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="bun"><code>bun add @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="deno"><code>deno add npm:@bleepit/core</code></pre>
+  </div>
   <p class="prose-width mt-3">Ships tree-shakeable ESM + CJS with types. Import only what you need:</p>
 <pre class="code-block-light mt-2"><code>import { ProfanityChecker } from "@bleepit/core";
 import { es } from "@bleepit/core/lists"; // individual lists for tiny bundles</code></pre>
