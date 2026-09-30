@@ -137,6 +137,19 @@
     @apply rounded-full border border-line bg-soft px-3 py-1 text-[13px];
   }
 
+  /* Inline nav link, in the bar from `sm` up. */
+  .nav-link {
+    @apply flex h-11 shrink-0 items-center whitespace-nowrap text-sm
+           text-muted no-underline hover:text-fg;
+  }
+
+  /* Same link as a full-width row in the mobile menu: 44px tap target, and a
+     hairline between rows rather than around each one. */
+  .nav-link-block {
+    @apply flex min-h-11 items-center border-b border-line text-[15px]
+           text-fg no-underline last:border-b-0 hover:text-accent;
+  }
+
   .btn {
     @apply inline-flex min-h-11 items-center rounded-lg border border-line
            px-5 text-[15px] no-underline;

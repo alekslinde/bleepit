@@ -1,17 +1,19 @@
 # bleepit
 
-Super lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic (Node · Browser · Deno · Bun · Workers).
+Keep profanity out of your product. A fast, free profanity checker that plugs
+into anywhere JavaScript runs (Node · Browser · Deno · Bun · Workers), with
+zero dependencies and wordlists you control.
 
 ```ts
 import { ProfanityChecker } from "@bleepit/core";
 
 const checker = new ProfanityChecker({ languages: ["en", "es"] });
 
-checker.isProfane("What the f.u.c.k?!"); // true
-checker.isProfane("shiiiiiit");          // true (elongation)
-checker.isProfane("sh1t");               // true (leet-speak)
-checker.isProfane("the class");          // false (word boundaries)
-checker.censor("You are a b1tch");       // "You are a *****"
+checker.isProfane("What an a.r.s.e?!");   // true
+checker.isProfane("arrrse");              // true (elongation)
+checker.isProfane("@rse");                // true (leet-speak)
+checker.isProfane("the class");           // false (word boundaries)
+checker.censor("That was a d0uche move"); // "That was a ****** move"
 ```
 
 ## Why this design
@@ -21,10 +23,10 @@ checker.censor("You are a b1tch");       // "You are a *****"
   query time.
 - **Normalize-then-match** — a single pass folds case, diacritics
   (`scheiße`→`scheisse`), leet (`@`→`a`, `$`→`s`), drops separators
-  (`f.u-c_k`→`fuck`), and tolerates elongations (`fuuuuck`) by
+  (`a.r-s_e`→`arse`), and tolerates elongations (`bollllocks`) by
   repeat-aware stepping that still keeps `as` ≠ `ass`.
-- **Language-agnostic engine** — unicode-aware by construction; plug in any
-  wordlist or script (`customWords: ["сука", "クソ"]`). Ships with compact
+- **Script-agnostic engine** — unicode-aware by construction; plug in any
+  wordlist or script (`customWords: ["чёрт", "クソ"]`). Ships with compact
   `en`/`es`/`fr`/`de` starters; other languages stay out of your bundle
   unless imported.
 - **Tiny** — zero deps, tree-shakeable ESM + CJS, minified (~few KB).
@@ -50,12 +52,23 @@ import { es } from "@bleepit/core/lists"; // individual lists for tiny bundles
 const c = createChecker({ languages: ["es"], whitelist: ["arsenal"] });
 ```
 
-## Known limitation
+## Known limitations
 
-Single-character masking (`f*ck`, `sh*t`) is intentionally out of scope —
-a `*` can stand for any letter, so reliable matching needs edit-distance
-search, which would break the lightweight/`O(n)` guarantees. Workaround:
-add the variants you care about via `customWords`.
+**Coverage is the lists you load.** There is no language detection — a word
+that is not in a loaded list or in `customWords` is never flagged. Four
+starter lists ship (`en`, `es`, `fr`, `de`), and everything else needs adding
+explicitly. That includes close cousins of a language you have loaded:
+Portuguese `merda` is not matched by Spanish `mierda`, and Swedish `skit` is
+not matched by English `shit`.
+
+**Single-character masking** (`a*se`, `b*llocks`) is intentionally out of
+scope — a `*` can stand for any letter, so reliable matching needs
+edit-distance search, which would break the lightweight/`O(n)` guarantees.
+Workaround: add the variants you care about via `customWords`.
+
+No filter is perfect — pair automated checks with reporting and human review
+for high-stakes moderation, especially for communities whose languages you do
+not speak.
 
 ## License
 

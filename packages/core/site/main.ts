@@ -17,11 +17,11 @@ function area(id: string): HTMLTextAreaElement {
 const PRESETS: Record<string, string> = {
   clean:
     "The class discussed the Scunthorpe problem and nobody was offended.",
-  profane: "You absolute bastard. What a douche — total bollocks.",
+  profane: "He called me an arse and a douche. Utter bollocks.",
   // Separators, elongation and leet in one line, so the demo shows all three
   // normalization paths rather than claiming them.
-  obfuscated: "You absolute b.a.s.t.a.r.d, what a d0uchhhhe, utter b0ll0cks.",
-  multilingual: "Qué mierda! Putain! Du Idiot! Scheiße.",
+  obfuscated: "He called me an a.r.s.e and a d0uchhhhe. Utter b0ll0cks.",
+  multilingual: "¡Hostia! Quel bordel! Ach, kacken. Cabrón.",
 };
 
 let checker = new ProfanityChecker();
@@ -101,16 +101,42 @@ area("demo-input").addEventListener("input", render);
 // handles switching it afterwards. Reading the computed state rather than the
 // attribute means the first click flips away from the OS preference, instead
 // of setting the theme the user is already looking at.
-$("theme-toggle").addEventListener("click", () => {
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-  const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light");
-  const next = current === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  try {
-    localStorage.setItem("bleepit-theme", next);
-  } catch {
-    // Private mode — the toggle still works for this page view.
-  }
+//
+// Two buttons carry this — one per nav presentation — so it binds by attribute
+// rather than id.
+document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    // The mobile copy sits inside the menu's <summary>, where a bare click
+    // would also toggle the disclosure. Theme and menu stay independent.
+    event.preventDefault();
+    const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("bleepit-theme", next);
+    } catch {
+      // Private mode — the toggle still works for this page view.
+    }
+  });
+});
+
+// Close the mobile menu once a link is taken. Without this the panel stays open
+// over the section it just scrolled to. Same-page anchors do not reload, so
+// nothing else would close it.
+const navMenu = $("nav-menu") as HTMLDetailsElement;
+navMenu.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => {
+    navMenu.open = false;
+  });
+});
+
+// Widening past the breakpoint hides the whole disclosure, but `open` would
+// survive it — so a rotate back to portrait would reveal a panel the visitor
+// never opened. Collapse it when the inline nav takes over.
+const wide = matchMedia("(min-width: 40rem)");
+wide.addEventListener("change", (e) => {
+  if (e.matches) navMenu.open = false;
 });
 
 readOptions();
