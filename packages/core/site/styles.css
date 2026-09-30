@@ -30,6 +30,9 @@
   --color-bad-bg: #fde7e7;
   --color-code-bg: #111111;
   --color-code-fg: #eeeeee;
+  /* Shared by a code block and the copy button overlapping its corner, so the
+     two can never round differently. */
+  --radius-code: 10px;
   /* Text on a filled accent button. Flips to near-black in dark mode, where
      the accent lightens for legibility against a dark page and white-on-accent
      would drop to ~2.3:1. */
@@ -104,6 +107,27 @@
     color: var(--color-fg);
   }
 
+  /* Ease the theme swap so a dark-room switch is not a white flash. Only the
+     token-driven properties transition, and only while `.theming` is set — the
+     bundle adds it for the length of the switch, so hover and focus stay
+     instant and the first paint is not animated.
+
+     `!important` because several of these properties are set by utilities that
+     would otherwise win on specificity. That also outranks the reduced-motion
+     block below, which is why this sits inside its own `no-preference` query
+     rather than relying on being overridden. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root.theming *,
+    :root.theming *::before,
+    :root.theming *::after {
+      transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        color 200ms ease,
+        fill 200ms ease !important;
+    }
+  }
+
   /* One visible focus ring for every interactive element. Keyboard-only, so
      pointer users never see it on click. */
   :focus-visible {
@@ -143,13 +167,6 @@
            text-muted no-underline hover:text-fg;
   }
 
-  /* Same link as a full-width row in the mobile menu: 44px tap target, and a
-     hairline between rows rather than around each one. */
-  .nav-link-block {
-    @apply flex min-h-11 items-center border-b border-line text-[15px]
-           text-fg no-underline last:border-b-0 hover:text-accent;
-  }
-
   .btn {
     @apply inline-flex min-h-11 items-center rounded-lg border border-line
            px-5 text-[15px] no-underline;
@@ -167,86 +184,80 @@
   }
 
   .code-block {
-    @apply overflow-x-auto rounded-[10px] bg-code-bg px-4 py-3.5
+    @apply overflow-x-auto rounded-[var(--radius-code)] bg-code-bg px-4 py-3.5
            font-mono text-sm text-code-fg;
   }
 
   .code-block-light {
-    @apply overflow-x-auto rounded-[10px] border border-line bg-soft px-4 py-3.5
-           font-mono text-sm text-fg;
+    @apply overflow-x-auto rounded-[var(--radius-code)] border border-line bg-soft
+           px-4 py-3.5 font-mono text-sm text-fg;
   }
 
-  /* Injected by the bundle: a non-scrolling parent for the <pre>, so the copy
-     button can be positioned against the block's visible corner. Anchoring it
-     inside the <pre> instead would scroll it out of reach on a long line. */
-  .code-figure {
-    @apply relative;
+  /* Package-manager tabs. The install command differs per manager, so the block
+     shows one at a time: copying the whole set would hand over three commands
+     nobody wants to run. */
+  .pm-tabs {
+    @apply grid gap-1.5;
   }
 
-  /* The button overlaps the block's top-right corner. A long line still scrolls
-     beneath it, so it carries a gradient gutter (below) that fades the code out
-     rather than letting it vanish mid-glyph behind an opaque edge. */
-  .code-copy {
-    @apply absolute top-1.5 right-1.5 z-10 flex size-11 cursor-pointer
-           items-center justify-center rounded-lg border text-muted
-           hover:text-fg;
+  .pm-tab {
+    @apply inline-flex min-h-11 cursor-pointer items-center rounded-lg px-3
+           text-sm text-muted hover:text-fg;
   }
 
-  /* Sits behind the button, spanning the full height of the block's first rows,
-     so the fade covers every line the button overlaps. `pointer-events-none`
-     keeps the code underneath selectable. */
-  .code-copy::before {
-    @apply pointer-events-none absolute top-[-0.375rem] right-[-0.375rem]
-           -z-10 h-[calc(100%+0.75rem)] w-[calc(100%+1.5rem)] content-[''];
+  /* Injected by the bundle to sit the copy button beside the radio group rather than
+     inside it — inside it, the button would be announced as one of the options. */
+  /* Full width so `ml-auto` on the button has room to push against; without it
+     the bar shrinks to its contents and the two sit side by side. */
+  .pm-bar {
+    @apply flex w-full flex-wrap items-center gap-x-2;
   }
 
-  /* Each block's own surface, so the button reads as part of it. The dark
-     blocks keep their palette regardless of theme, hence the fixed tokens
-     rather than `line`/`muted`. */
-  .code-block-light + .code-copy {
-    @apply border-line bg-soft;
+  /* `.code-copy` carries `order-first` to sit above a standalone block; in the
+     bar it follows the options instead, so that is reset here. */
+  .pm-bar > .code-copy {
+    @apply order-none ml-auto;
   }
 
-  .code-block-light + .code-copy::before {
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--color-soft) 2.25rem
-    );
+  /* The radio is visually hidden, so its label carries the selected state and
+     the focus ring — `:focus-visible` on the input cannot paint one itself. */
+  :checked + .pm-tab {
+    @apply bg-soft font-semibold text-fg;
   }
 
-  .code-block + .code-copy {
-    @apply border-white/20 bg-code-bg text-code-fg/70 hover:text-code-fg;
+  :focus-visible + .pm-tab {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 
-  .code-block + .code-copy::before {
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--color-code-bg) 2.25rem
-    );
-  }
-
-  /* Swap the clipboard for a tick while the "copied" state is on. */
-  .code-copy[data-copied] {
-    @apply text-good;
-  }
-
-  /* The dark blocks keep their dark surface in both themes, so the tick takes
-     the dark-mode green there — the light-mode one sits at ~3.6:1 on #111. */
-  .code-block + .code-copy[data-copied] {
-    color: var(--dark-good);
-  }
-
-  .code-copy[data-copied] .code-copy-idle,
-  .code-copy:not([data-copied]) .code-copy-done {
+  .pm-panel {
     @apply hidden;
   }
 
-  /* Room for the button. Applied only once the bundle has wrapped the block, so
-     an unenhanced page keeps its original padding and no dead gutter. */
+  /* Each radio precedes its own label, and the panels follow the whole tablist,
+     so the nth-of-type pairs map a checked radio to its panel. */
+  .pm-tabs:has(input:nth-of-type(1):checked) .pm-panel:nth-of-type(1),
+  .pm-tabs:has(input:nth-of-type(2):checked) .pm-panel:nth-of-type(2),
+  .pm-tabs:has(input:nth-of-type(3):checked) .pm-panel:nth-of-type(3),
+  .pm-tabs:has(input:nth-of-type(4):checked) .pm-panel:nth-of-type(4) {
+    @apply block;
+  }
+
+  /* Injected by the bundle: holds the copy button above its code block. The
+     button sits outside the <pre> rather than over it — inside a container that
+     scrolls horizontally there is no position that stays put and clear of the
+     code. */
+  .code-figure {
+    @apply flex flex-col items-end gap-1.5;
+  }
+
   .code-figure > :is(.code-block, .code-block-light) {
-    @apply pr-16;
+    @apply w-full;
+  }
+
+  .code-copy {
+    @apply order-first cursor-pointer rounded-md border-0 bg-transparent px-1
+           py-0.5 text-[13px] text-muted hover:text-fg hover:underline;
   }
 
   .code-inline {

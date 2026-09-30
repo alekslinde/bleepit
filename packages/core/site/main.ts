@@ -101,18 +101,23 @@ area("demo-input").addEventListener("input", render);
 // handles switching it afterwards. Reading the computed state rather than the
 // attribute means the first click flips away from the OS preference, instead
 // of setting the theme the user is already looking at.
-//
-// Two buttons carry this — one per nav presentation — so it binds by attribute
-// rather than id.
+let themingOff: number | undefined;
+
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    // The mobile copy sits inside the menu's <summary>, where a bare click
-    // would also toggle the disclosure. Theme and menu stay independent.
-    event.preventDefault();
+  button.addEventListener("click", () => {
     const dark = matchMedia("(prefers-color-scheme: dark)").matches;
     const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light");
     const next = current === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+
+    // Colours only animate while this class is set, so the switch eases but
+    // hover and focus stay instant. Removing it after the transition keeps the
+    // rule off everything else.
+    const root = document.documentElement;
+    root.classList.add("theming");
+    clearTimeout(themingOff);
+    themingOff = window.setTimeout(() => root.classList.remove("theming"), 250);
+
+    root.dataset.theme = next;
     try {
       localStorage.setItem("bleepit-theme", next);
     } catch {
@@ -121,73 +126,70 @@ document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   });
 });
 
-// Close the mobile menu once a link is taken. Without this the panel stays open
-// over the section it just scrolled to. Same-page anchors do not reload, so
-// nothing else would close it.
-const navMenu = $("nav-menu") as HTMLDetailsElement;
-navMenu.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", () => {
-    navMenu.open = false;
-  });
-});
-
-// Widening past the breakpoint hides the whole disclosure, but `open` would
-// survive it — so a rotate back to portrait would reveal a panel the visitor
-// never opened. Collapse it when the inline nav takes over.
-const wide = matchMedia("(min-width: 40rem)");
-wide.addEventListener("change", (e) => {
-  if (e.matches) navMenu.open = false;
-});
-
 // Copy-to-clipboard on every code block. Injected rather than written into the
 // HTML so the markup stays one <pre> per snippet, and so a visitor without the
 // bundle (or without clipboard access) sees plain, selectable code instead of a
 // dead button.
-const COPY_ICON =
-  '<svg class="code-copy-idle size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
-  '<rect x="9" y="9" width="11" height="11" rx="2"/>' +
-  '<path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>' +
-  '<svg class="code-copy-done size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
-  '<path d="M4 12.5 9 17.5 20 6.5"/></svg>';
+//
+// `text` is read at click time, not now: for the package-manager tabs the
+// snippet depends on which tab is selected when the button is pressed.
+function copyButton(text: () => string): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "code-copy";
+  button.textContent = "Copy";
+
+  let reset: number | undefined;
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(text());
+    } catch {
+      // Denied permission or an insecure context — say nothing rather than
+      // claiming a copy that did not happen.
+      return;
+    }
+    button.textContent = "Copied";
+    clearTimeout(reset);
+    reset = window.setTimeout(() => {
+      button.textContent = "Copy";
+    }, 2000);
+  });
+  return button;
+}
 
 if (navigator.clipboard) {
+  // One button per tab group, copying whichever command is on show. The panels
+  // are skipped below so they do not also get one each.
+  //
+  // The button goes beside the radio group, never inside it: a <button> among
+  // the options is announced as one of them, reading as a fifth package
+  // manager.
+  document.querySelectorAll(".pm-tabs").forEach((tabs) => {
+    const group = tabs.querySelector('[role="radiogroup"]');
+    if (!group) return;
+
+    const visible = () =>
+      Array.from(tabs.querySelectorAll<HTMLPreElement>(".pm-panel")).find(
+        (panel) => panel.offsetParent !== null,
+      );
+
+    const row = document.createElement("div");
+    row.className = "pm-bar";
+    group.replaceWith(row);
+    row.append(group, copyButton(() => visible()?.textContent ?? ""));
+  });
+
   document.querySelectorAll("pre > code").forEach((code) => {
     const pre = code.parentElement as HTMLPreElement;
+    if (pre.classList.contains("pm-panel")) return;
 
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "code-copy";
-    button.innerHTML = COPY_ICON;
-    // The label doubles as the live confirmation: it is the only feedback a
-    // screen-reader user gets from the icon swap.
-    button.setAttribute("aria-label", "Copy code to clipboard");
-
-    let reset: number | undefined;
-    button.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(code.textContent ?? "");
-      } catch {
-        // Denied permission or an insecure context — say nothing rather than
-        // claiming a copy that did not happen.
-        return;
-      }
-      button.dataset.copied = "";
-      button.setAttribute("aria-label", "Copied to clipboard");
-      clearTimeout(reset);
-      reset = window.setTimeout(() => {
-        delete button.dataset.copied;
-        button.setAttribute("aria-label", "Copy code to clipboard");
-      }, 2000);
-    });
-
-    // The button is positioned against this wrapper, not the <pre>, which
-    // scrolls horizontally — anchored inside it, a long line would carry the
-    // button off the edge. The <pre> keeps its own classes (and its margin
-    // utilities) so the wrapper stays purely a positioning context.
+    // The button goes above the block, not over it: a <pre> scrolls
+    // horizontally, so anything anchored inside it either scrolls away or sits
+    // on top of the code.
     const figure = document.createElement("div");
     figure.className = "code-figure";
     pre.replaceWith(figure);
-    figure.append(pre, button);
+    figure.append(pre, copyButton(() => code.textContent ?? ""));
   });
 }
 
