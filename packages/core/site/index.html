@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>bleepit — tiny, fast, multilingual profanity checker</title>
-<meta name="description" content="bleepit is a zero-dependency, isomorphic profanity checker. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de built in." />
+<title>bleepit — tiny, fast profanity checker for any JS runtime</title>
+<meta name="description" content="Keep profanity out of your product. A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
 <meta name="color-scheme" content="light dark" />
 <link rel="stylesheet" href="./styles.build.css" />
 <!-- Applies the stored theme before first paint so a dark-mode visitor never
@@ -53,11 +53,12 @@
   <h1 class="mb-3 text-[clamp(2rem,8vw,44px)] leading-tight font-bold">
     <code class="rounded-lg border border-line bg-soft px-2.5 py-0.5 font-mono text-[0.75em]">@bleepit/core</code>
   </h1>
-  <p class="prose-width mb-6 text-lg text-muted sm:text-[19px]">A super lightweight, fast, language-agnostic profanity checker.
-     Zero dependencies. Runs in Node, browsers, Deno, Bun, and workers.</p>
+  <p class="prose-width mb-6 text-lg text-muted sm:text-[19px]">Keep profanity out of your product. A fast, free profanity
+     checker that plugs into anywhere JavaScript runs — Node, browsers, Deno, Bun, and workers — with zero dependencies
+     and wordlists you control.</p>
   <ul class="mb-6 flex list-none flex-wrap gap-2 p-0">
     <li class="chip">~2.7 kB gzip</li><li class="chip">0 dependencies</li><li class="chip">one O(n) scan</li>
-    <li class="chip">~17 MB/s</li><li class="chip">en · es · fr · de built in</li><li class="chip">leet + elongation + diacritic tolerant</li>
+    <li class="chip">~17 MB/s</li><li class="chip">en · es · fr · de starter lists</li><li class="chip">leet + elongation + diacritic tolerant</li>
   </ul>
   <pre class="code-block"><code>npm i @bleepit/core   <span class="text-muted"># pnpm add @bleepit/core · bun add @bleepit/core · deno add npm:@bleepit/core</span></code></pre>
   <div class="mt-4 flex flex-wrap gap-2.5">
@@ -172,7 +173,7 @@ isProfane("bollocks"); // uses the shared default (English) instance</code></pre
 
 <section id="languages" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Languages</h2>
-  <p class="prose-width">The engine is unicode-aware by construction; built-in lists are compact starters — curate them for your community via <code class="code-inline">customWords</code>.</p>
+  <p class="prose-width">Four starter lists ship with the package. Anything else is <code class="code-inline">customWords</code> — the engine itself is script-agnostic, so the words you add can be in any language or writing system.</p>
   <div class="table-scroll mt-3">
     <table class="data-table">
       <thead><tr><th scope="col">Code</th><th scope="col">Language</th><th scope="col">Words</th></tr></thead>
@@ -186,7 +187,7 @@ isProfane("bollocks"); // uses the shared default (English) instance</code></pre
   </div>
 <pre class="code-block-light mt-3"><code>import { createChecker } from "@bleepit/core";
 
-// Any script works — normalization is unicode-aware:
+// Not built in — bring your own words, in any script:
 const c = createChecker({ languages: [], customWords: ["чёрт", "クソ"] });
 c.isProfane("вот ЧЁРТ"); // true (case-insensitive Cyrillic)
 
@@ -275,7 +276,8 @@ Deno.serve((req) =&gt; {
 <section id="limitations" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Limitations</h2>
   <p class="prose-width"><strong>Single-character masking</strong> (<code class="code-inline">a*se</code>, <code class="code-inline">b*llocks</code>) is intentionally out of scope: a <code class="code-inline">*</code> can stand for any letter, so reliable matching needs edit-distance search, which would break the lightweight / <code class="code-inline">O(n)</code> guarantees. Workaround: add the variants you care about via <code class="code-inline">customWords</code>.</p>
-  <p class="prose-width mt-3">No filter is perfect — pair automated checks with reporting and human review for high-stakes moderation.</p>
+  <p class="prose-width mt-3"><strong>Coverage is the lists you load.</strong> There is no language detection — a word that is not in a loaded list or in <code class="code-inline">customWords</code> is never flagged. Four starter lists ship (<code class="code-inline">en</code>, <code class="code-inline">es</code>, <code class="code-inline">fr</code>, <code class="code-inline">de</code>), and everything else needs adding explicitly. That includes close cousins of a language you have loaded: Portuguese <code class="code-inline">merda</code> is not matched by Spanish <code class="code-inline">mierda</code>, and Swedish <code class="code-inline">skit</code> is not matched by English <code class="code-inline">shit</code>.</p>
+  <p class="prose-width mt-3">No filter is perfect — pair automated checks with reporting and human review for high-stakes moderation, especially for communities whose languages you do not speak.</p>
 </section>
 
 <section id="faq" class="section">
@@ -288,7 +290,7 @@ Deno.serve((req) =&gt; {
     <p class="prose-width mt-2">Boundaries are checked against the original text. Letters block a match (<code class="code-inline">class</code>), while separators are obfuscation and get skipped.</p></details>
   <details class="my-2 rounded-lg border border-line px-3.5 py-2.5">
     <summary class="cursor-pointer py-1 font-semibold">Can I add my own language?</summary>
-    <p class="prose-width mt-2">Yes — <code class="code-inline">customWords</code> / <code class="code-inline">addWords()</code> accept any unicode script, and non-Latin text is matched case-insensitively.</p></details>
+    <p class="prose-width mt-2">Yes — <code class="code-inline">customWords</code> / <code class="code-inline">addWords()</code> accept any unicode script, and non-Latin text is matched case-insensitively. You do have to add the words: only <code class="code-inline">en</code>, <code class="code-inline">es</code>, <code class="code-inline">fr</code> and <code class="code-inline">de</code> ship as built-in lists, and there is no detection for anything else.</p></details>
   <details class="my-2 rounded-lg border border-line px-3.5 py-2.5">
     <summary class="cursor-pointer py-1 font-semibold">What about Chinese / Japanese / Thai (no spaces)?</summary>
     <p class="prose-width mt-2">Use <code class="code-inline">wholeWord: false</code> for those instances, since spaceless scripts have no word boundaries to check.</p></details>
