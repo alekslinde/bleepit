@@ -1,6 +1,6 @@
 {
   "name": "@bleepit/ocr",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Profanity detection for images: OCR adapter for bleepit, with match-to-bounding-box mapping. Zero runtime dependencies, bring your own OCR engine.",
   "type": "module",
   "license": "Apache-2.0",
