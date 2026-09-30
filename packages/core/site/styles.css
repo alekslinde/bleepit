@@ -192,18 +192,22 @@
      the block so a long line scrolling underneath is hidden rather than
      colliding with the glyph.
 
-     It sits at the block's inner edge (`top-0 right-0`) because anything less
-     lets a scrolling line show a sliver of text past the icon, and it takes the
-     block's own radius so the two corners it shares never read as a mix. The
-     icon stays optically inset via the padding. */
+     It reaches the block's edge because anything less lets a scrolling line show
+     a sliver of text past the icon, and it takes the block's own radius so the
+     two corners it shares never read as a mix. The icon stays optically inset
+     via the padding. */
   .code-copy {
     @apply absolute top-0 right-0 z-10 flex h-12 w-14 cursor-pointer items-center
            justify-center rounded-[var(--radius-code)] border-0 pr-3 text-muted
            hover:text-fg;
   }
 
+  /* Inset by the block's 1px border so the button fills the padding box, not the
+     border box — flush at `right-0` it would paint over the border's top and
+     right edges. The radius loses that same 1px to stay concentric with the
+     curve it sits inside. */
   .code-block-light + .code-copy {
-    @apply bg-soft;
+    @apply top-px right-px rounded-[calc(var(--radius-code)-1px)] bg-soft;
   }
 
   /* The dark blocks keep their palette in both themes, so this takes the fixed
