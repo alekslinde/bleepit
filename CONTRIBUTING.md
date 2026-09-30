@@ -37,9 +37,9 @@ pnpm test
 Per-package work runs through a filter:
 
 ```bash
-pnpm --filter bleepit test:watch
-pnpm --filter bleepit bench
-pnpm --filter bleepit site:build
+pnpm --filter @bleepit/core test:watch
+pnpm --filter @bleepit/core bench
+pnpm --filter @bleepit/core site:build
 pnpm --filter @bleepit/ocr test
 ```
 
@@ -47,12 +47,12 @@ pnpm --filter @bleepit/ocr test
 
 | Package | Scope |
 |---|---|
-| [`bleepit`](packages/core) | The profanity checker. Aho-Corasick automaton, normalizer, wordlists. |
+| [`@bleepit/core`](packages/core) | The profanity checker. Aho-Corasick automaton, normalizer, wordlists. |
 | [`@bleepit/ocr`](packages/ocr) | Image support: OCR adapter and match-to-box mapping. |
 
 ## What belongs here
 
-**`bleepit` has zero runtime dependencies, and that is a feature rather than
+**`@bleepit/core` has zero runtime dependencies, and that is a feature rather than
 an accident.** It is the main reason to pick this library over the many
 alternatives. A patch that adds a runtime dependency to the core package will
 be turned down regardless of how good the feature is — so if you are weighing
@@ -79,7 +79,7 @@ Things that do not:
 - Single-character mask matching (`f*ck`). A `*` can stand for any letter, so
   matching it reliably needs edit-distance search, which breaks the `O(n)`
   guarantee. Use `customWords` for the variants you care about.
-- Runtime dependencies in `bleepit`, as above.
+- Runtime dependencies in `@bleepit/core`, as above.
 
 ## Wordlists
 

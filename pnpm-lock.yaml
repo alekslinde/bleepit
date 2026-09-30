@@ -41,7 +41,7 @@ importers:
 
   packages/ocr:
     devDependencies:
-      bleepit:
+      '@bleepit/core':
         specifier: workspace:*
         version: link:../core
       tsup:

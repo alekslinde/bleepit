@@ -8,11 +8,11 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "bench": "pnpm --filter bleepit bench",
-    "site:build": "pnpm --filter bleepit site:build",
-    "size": "pnpm --filter bleepit size",
+    "bench": "pnpm --filter @bleepit/core bench",
+    "site:build": "pnpm --filter @bleepit/core site:build",
+    "size": "pnpm --filter @bleepit/core size",
     "changeset": "changeset",
-    "version": "changeset version",
+    "version:packages": "changeset version",
     "release": "pnpm -r build && changeset publish"
   },
   "devDependencies": {

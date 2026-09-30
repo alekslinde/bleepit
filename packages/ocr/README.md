@@ -13,7 +13,7 @@ pnpm add @bleepit/ocr bleepit
 ## Usage
 
 ```ts
-import { createChecker } from "bleepit";
+import { createChecker } from "@bleepit/core";
 import { createImageChecker } from "@bleepit/ocr";
 
 const ic = createImageChecker({

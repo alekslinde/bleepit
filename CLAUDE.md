@@ -17,7 +17,7 @@
 pnpm workspace — packages live under `packages/*`.
 
 ```
-packages/core/          ← The checker (published as `bleepit`)
+packages/core/          ← The checker (published as `@bleepit/core`)
   src/
     index.ts       ← Public API entry point
     checker.ts     ← ProfanityChecker class (find/censor/isProfane, addWords/removeWords)
@@ -57,7 +57,7 @@ packages/ocr/           ← Image support (published as `@bleepit/ocr`)
 
 ## Stack Conventions
 
-- No runtime dependencies — keep it that way (this is a core selling point: "zero dependencies, isomorphic"). Companion packages take `bleepit` as a peer dependency, never a bundled one
+- No runtime dependencies — keep it that way (this is a core selling point: "zero dependencies, isomorphic"). Companion packages take `@bleepit/core` as a peer dependency, never a bundled one
 - Each package exports its public API from its own `src/index.ts`; keep internals (automaton, normalizer, spans) unexported unless needed
 - `dist/` is generated per package via `tsup` (`pnpm build`) — never hand-edit or commit ad hoc changes there
 - `packages/core/site/bleepit.bundle.js` is generated via `esbuild` (`pnpm site:build`) — edit `site/main.ts`, then rebuild
@@ -98,14 +98,14 @@ pnpm test         ← Run all tests before committing (vitest)
 pnpm lint         ← Type-check all packages (tsc --noEmit)
 pnpm bench        ← Run benchmark suite
 pnpm site:build   ← Rebuild the demo bundle and stylesheet (site/main.ts, site/styles.css)
-pnpm size         ← Build and report gzip size of bleepit's dist/index.js
+pnpm size         ← Build and report gzip size of @bleepit/core's dist/index.js
 pnpm changeset    ← Record a user-visible change for the changelog
 ```
 
 Single-package work uses a filter:
 
 ```bash
-pnpm --filter bleepit test:watch
+pnpm --filter @bleepit/core test:watch
 pnpm --filter @bleepit/ocr test
 ```
 

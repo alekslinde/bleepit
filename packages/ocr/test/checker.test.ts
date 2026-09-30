@@ -1,4 +1,4 @@
-import { createChecker } from "bleepit";
+import { createChecker } from "@bleepit/core";
 import { describe, expect, it, vi } from "vitest";
 import { createImageChecker } from "../src/checker.js";
 import type { OcrEngine, OcrWord } from "../src/types.js";

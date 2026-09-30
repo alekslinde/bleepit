@@ -1,4 +1,4 @@
-import type { Match } from "bleepit";
+import type { Match } from "@bleepit/core";
 
 /**
  * Anything an OCR engine can accept. Deliberately wide: this package never
@@ -99,7 +99,7 @@ export interface ImageCheckerOptions {
 
 /**
  * Structural type for the bits of `ProfanityChecker` this package uses.
- * Keeps `bleepit` a peer dependency rather than a hard type coupling.
+ * Keeps `@bleepit/core` a peer dependency rather than a hard type coupling.
  */
 export interface ProfanityCheckerLike {
   find(text: string, limit?: number): Match[];

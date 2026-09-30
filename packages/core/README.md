@@ -3,7 +3,7 @@
 Super lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic (Node · Browser · Deno · Bun · Workers).
 
 ```ts
-import { ProfanityChecker } from "bleepit";
+import { ProfanityChecker } from "@bleepit/core";
 
 const checker = new ProfanityChecker({ languages: ["en", "es"] });
 
@@ -44,8 +44,8 @@ Options: `languages`, `customWords`, `whitelist`, `wholeWord` (default
 spaceless-script matching), `leet`, `stripDiacritics`.
 
 ```ts
-import { createChecker } from "bleepit";
-import { es } from "bleepit/lists"; // individual lists for tiny bundles
+import { createChecker } from "@bleepit/core";
+import { es } from "@bleepit/core/lists"; // individual lists for tiny bundles
 
 const c = createChecker({ languages: ["es"], whitelist: ["arsenal"] });
 ```

@@ -9,5 +9,5 @@ export default defineConfig({
   target: "es2020",
   clean: true,
   outDir: "dist",
-  external: ["bleepit"],
+  external: ["@bleepit/core"],
 });

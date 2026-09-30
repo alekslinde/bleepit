@@ -37,7 +37,7 @@
       <a class="flex h-11 shrink-0 items-center whitespace-nowrap text-sm text-muted no-underline hover:text-fg" href="#guides">Guides</a>
       <a class="flex h-11 shrink-0 items-center whitespace-nowrap text-sm text-muted no-underline hover:text-fg" href="#faq">FAQ</a>
       <a class="flex h-11 shrink-0 items-center whitespace-nowrap text-sm text-muted no-underline hover:text-fg" href="https://github.com/alekslinde/bleepit">GitHub</a>
-      <a class="flex h-11 shrink-0 items-center whitespace-nowrap text-sm text-muted no-underline hover:text-fg" href="https://www.npmjs.com/package/bleepit">npm</a>
+      <a class="flex h-11 shrink-0 items-center whitespace-nowrap text-sm text-muted no-underline hover:text-fg" href="https://www.npmjs.com/package/@bleepit/core">npm</a>
     </div>
     <button id="theme-toggle" type="button" aria-label="Switch between light and dark theme"
             class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-line text-muted hover:text-fg">
@@ -51,7 +51,7 @@
 
 <header class="py-10 sm:py-16">
   <h1 class="mb-3 text-[clamp(2rem,8vw,44px)] leading-tight font-bold">
-    <code class="rounded-lg border border-line bg-soft px-2.5 py-0.5 font-mono text-[0.75em]">bleepit</code>
+    <code class="rounded-lg border border-line bg-soft px-2.5 py-0.5 font-mono text-[0.75em]">@bleepit/core</code>
   </h1>
   <p class="prose-width mb-6 text-lg text-muted sm:text-[19px]">A super lightweight, fast, language-agnostic profanity checker.
      Zero dependencies. Runs in Node, browsers, Deno, Bun, and workers.</p>
@@ -59,7 +59,7 @@
     <li class="chip">~2.7 kB gzip</li><li class="chip">0 dependencies</li><li class="chip">one O(n) scan</li>
     <li class="chip">~17 MB/s</li><li class="chip">en · es · fr · de built in</li><li class="chip">leet + elongation + diacritic tolerant</li>
   </ul>
-  <pre class="code-block"><code>npm i bleepit   <span class="text-muted"># pnpm add bleepit · bun add bleepit · deno add npm:bleepit</span></code></pre>
+  <pre class="code-block"><code>npm i @bleepit/core   <span class="text-muted"># pnpm add @bleepit/core · bun add @bleepit/core · deno add npm:@bleepit/core</span></code></pre>
   <div class="mt-4 flex flex-wrap gap-2.5">
     <a class="btn btn-primary" href="#demo">Try the live demo</a>
     <a class="btn" href="#install">Read the docs</a>
@@ -111,18 +111,18 @@
 
 <section id="install" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Installation</h2>
-<pre class="code-block"><code>npm i bleepit
-pnpm add bleepit
-bun add bleepit
-deno add npm:bleepit</code></pre>
+<pre class="code-block"><code>npm i @bleepit/core
+pnpm add @bleepit/core
+bun add @bleepit/core
+deno add npm:@bleepit/core</code></pre>
   <p class="prose-width mt-3">Ships tree-shakeable ESM + CJS with types. Import only what you need:</p>
-<pre class="code-block-light mt-2"><code>import { ProfanityChecker } from "bleepit";
-import { es } from "bleepit/lists"; // individual lists for tiny bundles</code></pre>
+<pre class="code-block-light mt-2"><code>import { ProfanityChecker } from "@bleepit/core";
+import { es } from "@bleepit/core/lists"; // individual lists for tiny bundles</code></pre>
 </section>
 
 <section id="quickstart" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Quickstart</h2>
-<pre class="code-block-light"><code>import { ProfanityChecker } from "bleepit";
+<pre class="code-block-light"><code>import { ProfanityChecker } from "@bleepit/core";
 
 const checker = new ProfanityChecker({ languages: ["en", "es"] });
 
@@ -150,7 +150,7 @@ checker.censor("You are a b1tch");       // "You are a *****"</code></pre>
     </table>
   </div>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Factories &amp; singleton</h3>
-<pre class="code-block-light"><code>import { createChecker, isProfane, find, censor } from "bleepit";
+<pre class="code-block-light"><code>import { createChecker, isProfane, find, censor } from "@bleepit/core";
 
 const mine = createChecker({ languages: ["fr"] }); // isolated instance
 isProfane("fuck"); // uses the shared default (English) instance</code></pre>
@@ -184,7 +184,7 @@ isProfane("fuck"); // uses the shared default (English) instance</code></pre>
       </tbody>
     </table>
   </div>
-<pre class="code-block-light mt-3"><code>import { createChecker } from "bleepit";
+<pre class="code-block-light mt-3"><code>import { createChecker } from "@bleepit/core";
 
 // Any script works — normalization is unicode-aware:
 const c = createChecker({ languages: [], customWords: ["сука", "クソ"] });
@@ -217,7 +217,7 @@ checker.censor("oh shit", "#");         // "oh ####"</code></pre>
   <h2 class="mb-3.5 text-[28px] font-bold">Integrations</h2>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">React (comment box)</h3>
 <pre class="code-block-light"><code>import { useMemo, useState } from "react";
-import { createChecker } from "bleepit";
+import { createChecker } from "@bleepit/core";
 
 const checker = createChecker({ languages: ["en"] });
 
@@ -232,7 +232,7 @@ function CommentBox() {
   );
 }</code></pre>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Express middleware</h3>
-<pre class="code-block-light"><code>import { createChecker } from "bleepit";
+<pre class="code-block-light"><code>import { createChecker } from "@bleepit/core";
 
 const checker = createChecker();
 app.post("/comments", (req, res, next) =&gt; {
@@ -242,7 +242,7 @@ app.post("/comments", (req, res, next) =&gt; {
   next();
 });</code></pre>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Deno</h3>
-<pre class="code-block-light"><code>import { isProfane } from "npm:bleepit";
+<pre class="code-block-light"><code>import { isProfane } from "npm:@bleepit/core";
 
 Deno.serve((req) =&gt; {
   const url = new URL(req.url);
@@ -297,7 +297,7 @@ Deno.serve((req) =&gt; {
     <p class="prose-width mt-2"><code class="code-inline">find()</code> returns original-string offsets so you can highlight, redact, or audit matches yourself; <code class="code-inline">censor()</code> masks in place and preserves whitespace.</p></details>
   <details class="my-2 rounded-lg border border-line px-3.5 py-2.5">
     <summary class="cursor-pointer py-1 font-semibold">How big is it?</summary>
-    <p class="prose-width mt-2">Core bundle is ~6 kB minified (~2.7 kB gzip). Extra language lists are separate entrypoints (<code class="code-inline">bleepit/lists</code>) so you only ship what you load.</p></details>
+    <p class="prose-width mt-2">Core bundle is ~6 kB minified (~2.7 kB gzip). Extra language lists are separate entrypoints (<code class="code-inline">@bleepit/core/lists</code>) so you only ship what you load.</p></details>
 </section>
 
 </main>
@@ -306,7 +306,7 @@ Deno.serve((req) =&gt; {
   <div class="wrap">
   <p>bleepit · Apache-2.0 ·
      <a class="underline hover:text-fg" href="https://github.com/alekslinde/bleepit">GitHub</a> ·
-     <a class="underline hover:text-fg" href="https://www.npmjs.com/package/bleepit">npm</a> ·
+     <a class="underline hover:text-fg" href="https://www.npmjs.com/package/@bleepit/core">npm</a> ·
      Works with npm, pnpm, Bun, and Deno.</p>
   </div>
 </footer>

@@ -58,8 +58,12 @@ jobs:
       - name: Create version PR or publish
         uses: changesets/action@v1
         with:
-          version: pnpm version
-          publish: pnpm release
+          # `pnpm run`, not `pnpm <script>`: pnpm has a built-in `version`
+          # command that shadows a script of the same name and fails with
+          # ERR_PNPM_INVALID_VERSION_BUMP. The script is named version:packages
+          # for the same reason — so a future builtin cannot shadow it either.
+          version: pnpm run version:packages
+          publish: pnpm run release
           commit: "chore(config): version packages"
           title: "chore(config): version packages"
         env:

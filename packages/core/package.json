@@ -1,5 +1,5 @@
 {
-  "name": "bleepit",
+  "name": "@bleepit/core",
   "version": "0.1.0",
   "description": "Super lightweight, fast, language-agnostic profanity checker. Zero dependencies, isomorphic (Node/Browser/Deno/Bun/Workers).",
   "type": "module",

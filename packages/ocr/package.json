@@ -35,18 +35,18 @@
   ],
   "scripts": {
     "build": "tsup",
-    "pretest": "pnpm --filter bleepit build",
+    "pretest": "pnpm --filter @bleepit/core build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prelint": "pnpm --filter bleepit build",
+    "prelint": "pnpm --filter @bleepit/core build",
     "lint": "tsc --noEmit",
     "prepublishOnly": "pnpm build"
   },
   "peerDependencies": {
-    "bleepit": "workspace:^"
+    "@bleepit/core": "workspace:^"
   },
   "devDependencies": {
-    "bleepit": "workspace:*",
+    "@bleepit/core": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
     "vitest": "^4.1.11"
