@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>bleepit — tiny, fast profanity checker for any JS runtime</title>
-<meta name="description" content="Keep profanity out of your product. A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
+<meta name="description" content="Keep profanity out of your product. A zero-dependency, isomorphic profanity checker with wordlists you control — for text, and for images via OCR. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
 <meta name="color-scheme" content="light dark" />
 <link rel="canonical" href="https://alekslinde.github.io/bleepit/" />
 <meta name="robots" content="index, follow" />
@@ -16,10 +16,10 @@
 <meta property="og:url" content="https://alekslinde.github.io/bleepit/" />
 <meta property="og:site_name" content="bleepit" />
 <meta property="og:title" content="bleepit — tiny, fast profanity checker for any JS runtime" />
-<meta property="og:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
+<meta property="og:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control — for text, and for images via OCR. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="bleepit — tiny, fast profanity checker for any JS runtime" />
-<meta name="twitter:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
+<meta name="twitter:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control — for text, and for images via OCR. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
 
 <!-- Names the package as software rather than a generic page, so a search
      result can show the licence and that it is free. -->
@@ -27,8 +27,8 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareSourceCode",
-  "name": "@bleepit/core",
-  "description": "A zero-dependency, isomorphic profanity checker with wordlists you control.",
+  "name": "bleepit",
+  "description": "A zero-dependency, isomorphic profanity checker with wordlists you control — for text (@bleepit/core) and for images via OCR (@bleepit/ocr).",
   "url": "https://alekslinde.github.io/bleepit/",
   "codeRepository": "https://github.com/alekslinde/bleepit",
   "programmingLanguage": "TypeScript",
@@ -52,12 +52,15 @@
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-line focus:bg-bg focus:px-4 focus:py-2">Skip to content</a>
 
 <nav class="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur-sm">
-  <!-- Three links fit inline at every width, so there is no mobile menu to
-       open: the same bar serves phone and desktop. -->
+  <!-- One link per package plus FAQ and About. Still fits inline at every
+       width, so there is no mobile menu to open: the same bar serves phone and
+       desktop. A third package would push against that — at which point this
+       collapses to a menu rather than growing a fifth link. -->
   <div class="wrap flex h-14 items-center gap-x-3">
     <b class="shrink-0 text-lg">bleepit</b>
     <div class="flex flex-1 items-center justify-end gap-x-2 sm:gap-x-4">
-      <a class="nav-link" href="#docs">Docs</a>
+      <a class="nav-link" href="#core">Core</a>
+      <a class="nav-link" href="#ocr">Images</a>
       <a class="nav-link" href="#faq">FAQ</a>
       <a class="nav-link" href="#about">About</a>
     </div>
@@ -72,9 +75,7 @@
 <main id="main" class="wrap">
 
 <header class="py-10 sm:py-16">
-  <h1 class="mb-3 text-[clamp(2rem,8vw,44px)] leading-tight font-bold">
-    <code class="rounded-lg border border-line bg-soft px-2.5 py-0.5 font-mono text-[0.75em]">@bleepit/core</code>
-  </h1>
+  <h1 class="mb-3 text-[clamp(2rem,8vw,44px)] leading-tight font-bold">bleepit</h1>
   <p class="prose-width mb-6 text-lg text-muted sm:text-[19px]">Keep profanity out of your product. A fast, free profanity
      checker that plugs into anywhere JavaScript runs — Node, browsers, Deno, Bun, and workers — with zero dependencies
      and wordlists you control.</p>
@@ -82,6 +83,24 @@
     <li class="chip">~2.7 kB gzip</li><li class="chip">0 dependencies</li><li class="chip">one O(n) scan</li>
     <li class="chip">~17 MB/s</li><li class="chip">en · es · fr · de starter lists</li><li class="chip">leet + elongation + diacritic tolerant</li>
   </ul>
+  <!-- The package table is the site's map: two packages today, and the row is
+       the unit that a third one adds. It sits above the fold because "which
+       package do I install" is the first question a visitor has. -->
+  <div class="table-scroll mb-6">
+    <table class="data-table">
+      <thead><tr><th scope="col">Package</th><th scope="col">What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a class="underline hover:text-accent" href="#core"><code class="code-inline">@bleepit/core</code></a></td>
+          <td>Profanity checking for text. The engine everything else builds on.</td>
+        </tr>
+        <tr>
+          <td><a class="underline hover:text-accent" href="#ocr"><code class="code-inline">@bleepit/ocr</code></a></td>
+          <td>Profanity checking for images: OCR the page, map matches back to bounding boxes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <!-- Same tab set as the install section; `name` differs so the two groups do
        not drive each other. -->
   <div class="pm-tabs">
@@ -102,7 +121,7 @@
   </div>
   <div class="mt-4 flex flex-wrap items-center gap-2.5">
     <a class="btn btn-primary" href="#demo">Try the live demo</a>
-    <a class="btn" href="#docs">Read the docs</a>
+    <a class="btn" href="#core">Read the docs</a>
   </div>
 </header>
 
@@ -149,9 +168,13 @@
   </div>
 </section>
 
-<!-- The three nav targets are wrappers, not new content: each groups the
-     sections that were previously linked one by one. -->
-<div id="docs">
+<!-- Nav targets are wrappers, not new content: each groups the sections below
+     it. `#core` and `#ocr` are the per-package groups; a third package adds a
+     third wrapper alongside them rather than changing either. `#docs` stays as
+     an alias for the docs as a whole, since links to it are already out there. -->
+<div id="docs"></div>
+
+<div id="core">
 
 <section id="install" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Installation</h2>
@@ -311,7 +334,121 @@ Deno.serve((req) =&gt; {
 });</code></pre>
 </section>
 
-</div><!-- /#docs -->
+</div><!-- /#core -->
+
+<div id="ocr">
+
+<section id="ocr-intro" class="section">
+  <h2 class="mb-3.5 text-[28px] font-bold"><code class="code-inline">@bleepit/ocr</code> — images</h2>
+  <p class="prose-width">Profanity in an image is profanity. <code class="code-inline">@bleepit/ocr</code> runs your OCR
+     engine over a page, scans the recognized text with <code class="code-inline">@bleepit/core</code>, and hands back each
+     match with the bounding boxes it came from — so you can redact, blur, or route for review.</p>
+  <p class="prose-width mt-3">Zero runtime dependencies, same as core. It ships no OCR engine: you bring one, and it can be
+     local WASM or a cloud API.</p>
+  <div class="pm-tabs mt-4">
+    <div role="radiogroup" aria-label="Package manager" class="flex flex-wrap gap-1">
+      <input type="radio" name="pm-ocr" id="pm-ocr-npm" class="sr-only" checked />
+      <label for="pm-ocr-npm" class="pm-tab">npm</label>
+      <input type="radio" name="pm-ocr" id="pm-ocr-pnpm" class="sr-only" />
+      <label for="pm-ocr-pnpm" class="pm-tab">pnpm</label>
+      <input type="radio" name="pm-ocr" id="pm-ocr-bun" class="sr-only" />
+      <label for="pm-ocr-bun" class="pm-tab">bun</label>
+      <input type="radio" name="pm-ocr" id="pm-ocr-deno" class="sr-only" />
+      <label for="pm-ocr-deno" class="pm-tab">deno</label>
+    </div>
+<pre class="code-block pm-panel" data-pm="npm"><code>npm i @bleepit/ocr @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="pnpm"><code>pnpm add @bleepit/ocr @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="bun"><code>bun add @bleepit/ocr @bleepit/core</code></pre>
+<pre class="code-block pm-panel" data-pm="deno"><code>deno add npm:@bleepit/ocr npm:@bleepit/core</code></pre>
+  </div>
+<pre class="code-block-light mt-4"><code>import { createChecker } from "@bleepit/core";
+import { createImageChecker } from "@bleepit/ocr";
+
+const ic = createImageChecker({
+  engine: myOcrEngine,
+  checker: createChecker({ languages: ["en", "es"] }),
+});
+
+await ic.isProfane(image); // boolean
+await ic.find(image);      // ImageMatch[] — word, text, boxes, confidence
+await ic.redact(image);    // BBox[] — one merged box per match</code></pre>
+</section>
+
+<section id="ocr-api" class="section">
+  <h2 class="mb-3.5 text-[28px] font-bold">Image API</h2>
+  <h3 id="ocr-methods" class="mt-6 mb-2 text-[19px] font-semibold">ImageProfanityChecker</h3>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th scope="col">Method</th><th scope="col">Signature</th><th scope="col">Description</th></tr></thead>
+      <tbody>
+        <tr><td><code class="code-inline">isProfane</code></td><td><code class="code-inline">(image) =&gt; Promise&lt;boolean&gt;</code></td><td>Boolean check on a recognized page.</td></tr>
+        <tr><td><code class="code-inline">find</code></td><td><code class="code-inline">(image) =&gt; Promise&lt;ImageMatch[]&gt;</code></td><td>Each match with <code class="code-inline">boxes</code>, <code class="code-inline">words</code>, <code class="code-inline">text</code> and <code class="code-inline">confidence</code>.</td></tr>
+        <tr><td><code class="code-inline">redact</code></td><td><code class="code-inline">(image) =&gt; Promise&lt;BBox[]&gt;</code></td><td>One merged box per match — geometry only, nothing is drawn.</td></tr>
+        <tr><td><code class="code-inline">findInWords</code></td><td><code class="code-inline">(words) =&gt; ImageMatch[]</code></td><td>Synchronous, for when OCR already ran elsewhere in your pipeline.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="ocr-options" class="mt-6 mb-2 text-[19px] font-semibold">Options</h3>
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead><tr><th scope="col">Option</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Description</th></tr></thead>
+      <tbody>
+        <tr><td><code class="code-inline">engine</code></td><td><code class="code-inline">OcrEngine</code></td><td>—</td><td>Required. The OCR backend; this package ships none.</td></tr>
+        <tr><td><code class="code-inline">checker</code></td><td><code class="code-inline">ProfanityCheckerLike</code></td><td>English <code class="code-inline">ProfanityChecker</code></td><td>Pass your own to configure languages or wordlists.</td></tr>
+        <tr><td><code class="code-inline">minConfidence</code></td><td><code class="code-inline">number</code></td><td><code class="code-inline">60</code></td><td>Drop OCR words below this confidence (0–100) before matching.</td></tr>
+        <tr><td><code class="code-inline">crossWord</code></td><td><code class="code-inline">boolean</code></td><td><code class="code-inline">false</code></td><td>Allow a match to span more than one OCR word. See the tradeoff below.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 id="ocr-engine" class="mt-6 mb-2 text-[19px] font-semibold">Bring your own engine</h3>
+  <p class="prose-width">An engine is any object with a <code class="code-inline">recognize</code> method returning positioned
+     words. That is the whole contract — adapting a cloud OCR API means mapping its response into this shape.</p>
+<pre class="code-block-light mt-2"><code>interface OcrEngine {
+  recognize(image: ImageInput): Promise&lt;{ words: OcrWord[] }&gt;;
+  terminate?(): Promise&lt;void&gt;;
+}
+
+interface OcrWord {
+  text: string;
+  bbox: { x0: number; y0: number; x1: number; y1: number };
+  confidence: number; // 0–100
+}</code></pre>
+  <p class="prose-width mt-3">This package never decodes, resizes, or preprocesses images — the input goes straight to the
+     engine. It also does not draw redactions: <code class="code-inline">redact()</code> returns geometry, because
+     rasterizing needs a canvas or an image library, and that dependency is yours to choose.</p>
+</section>
+
+<section id="ocr-accuracy" class="section">
+  <h2 class="mb-3.5 text-[28px] font-bold">Image accuracy</h2>
+  <h3 id="ocr-crossword" class="mt-6 mb-2 text-[19px] font-semibold">Word fragments and the <code class="code-inline">crossWord</code> tradeoff</h3>
+  <p class="prose-width">bleepit strips non-alphanumerics before matching — that is what catches
+     <code class="code-inline">a.r.s.e</code>. The consequence for OCR is that <strong>any gap between two recognized words
+     disappears</strong>, so <code class="code-inline">"ar"</code> and <code class="code-inline">"se"</code> in adjacent
+     boxes would scan as one word. No separator character avoids this; only a letter would, and injecting letters corrupts
+     offsets.</p>
+  <p class="prose-width mt-3">So each OCR word is scanned on its own by default. Neighbouring words cannot collide, at the
+     cost of missing profanity that OCR split across two boxes. Flip it when a split word is the likelier failure:</p>
+<pre class="code-block-light mt-2"><code>createImageChecker({ engine, crossWord: true });</code></pre>
+  <p class="prose-width mt-3">Expect more false positives in that mode — it is the right choice for noisy scans of stylized
+     type, and the wrong one for dense screenshots of prose.</p>
+  <h3 id="ocr-noise" class="mt-6 mb-2 text-[19px] font-semibold">OCR noise raises false positives</h3>
+  <p class="prose-width">bleepit normalizes leet-speak, mapping <code class="code-inline">1→i</code> and
+     <code class="code-inline">0→o</code>. OCR makes the same confusions, so the normalizer silently repairs a lot of
+     recognition error — <code class="code-inline">pr1ck</code> still matches. The cost is that OCR garbage also normalizes
+     <em>toward</em> dictionary words, and flags that would never fire on typed input.</p>
+  <p class="prose-width mt-3"><code class="code-inline">minConfidence</code> (default <code class="code-inline">60</code>)
+     is the main lever. Raise it for photographs and scans; lower it for clean screenshots where a miss costs more than a
+     false positive. Tune it against images that look like yours — the right value depends on your engine and your inputs,
+     not on a general default.</p>
+  <ul class="prose-width mt-3 list-disc space-y-1 pl-5">
+    <li><strong>Text only.</strong> This finds profane <em>words</em> in an image. It does not detect offensive imagery,
+        gestures, or symbols — that is an image classifier, and a different problem with different failure modes.</li>
+    <li><strong>A miss is not a guarantee.</strong> Stylized type, low contrast, curved text, and handwriting all defeat
+        OCR. Treat a clean result as “nothing recognized,” not “nothing there.”</li>
+  </ul>
+</section>
+
+</div><!-- /#ocr -->
 
 <div id="about">
 

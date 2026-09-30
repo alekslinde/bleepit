@@ -1,0 +1,27 @@
+{
+  "name": "@bleepit/site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation site and live demo for the bleepit packages.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "pnpm site:build",
+    "presite:build": "pnpm --filter \"@bleepit/*\" --filter \"!@bleepit/site\" build",
+    "site:build": "pnpm site:build:js && pnpm site:build:css",
+    "prelint": "pnpm --filter \"@bleepit/*\" --filter \"!@bleepit/site\" build",
+    "site:build:js": "esbuild main.ts --bundle --minify --format=iife --target=es2020 --outfile=bleepit.bundle.js",
+    "site:build:css": "tailwindcss -i styles.css -o styles.build.css --minify",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bleepit/core": "workspace:*",
+    "@bleepit/ocr": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "esbuild": "^0.28.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.2"
+  }
+}

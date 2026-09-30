@@ -3,11 +3,12 @@ name: Pages
 on:
   push:
     branches: [main]
-    # The demo is built from the library source, so a change to either can
-    # alter what the page does. Everything else (tests, OCR, docs) cannot.
+    # The site bundles the packages it documents, so a change to any package's
+    # source can alter what the page does. Matching every package's src keeps a
+    # new package covered without editing this filter.
     paths:
-      - "packages/core/site/**"
-      - "packages/core/src/**"
+      - "packages/site/**"
+      - "packages/*/src/**"
       - ".github/workflows/pages.yml"
   # Allows a redeploy without an empty commit, e.g. after changing a setting.
   workflow_dispatch:
@@ -53,16 +54,26 @@ jobs:
       # from.
       - name: Warn if the committed bundle was stale
         run: |
-          if ! git diff --quiet -- packages/core/site/bleepit.bundle.js; then
-            echo "::warning file=packages/core/site/bleepit.bundle.js::\
+          if ! git diff --quiet -- packages/site/bleepit.bundle.js; then
+            echo "::warning file=packages/site/bleepit.bundle.js::\
           Committed bundle differs from a fresh build. Run 'pnpm site:build' and commit the result."
           fi
+
+      # Collect just the files the page serves. The site package also holds its
+      # manifest, tsconfig, TypeScript sources and a node_modules — none of
+      # which belong in a Pages artifact, and the last of which would bloat
+      # every deploy.
+      - name: Assemble the deployable site
+        run: |
+          mkdir -p _site
+          cp packages/site/index.html packages/site/.nojekyll _site/
+          cp packages/site/bleepit.bundle.js packages/site/styles.build.css _site/
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/core/site
+          path: _site
 
   deploy:
     name: deploy to pages

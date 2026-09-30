@@ -1,101 +1,9 @@
-import { ProfanityChecker } from "../src/index.js";
-
-function $(id: string): HTMLElement {
-  const el = document.getElementById(id);
-  if (!el) throw new Error(`missing element #${id}`);
-  return el;
-}
-
-function input(id: string): HTMLInputElement {
-  return $(id) as HTMLInputElement;
-}
-
-function area(id: string): HTMLTextAreaElement {
-  return $(id) as HTMLTextAreaElement;
-}
-
-const PRESETS: Record<string, string> = {
-  clean:
-    "The class discussed the Scunthorpe problem and nobody was offended.",
-  profane: "He called me an arse and a douche. Utter bollocks.",
-  // Separators, elongation and leet in one line, so the demo shows all three
-  // normalization paths rather than claiming them.
-  obfuscated: "He called me an a.r.s.e and a d0uchhhhe. Utter b0ll0cks.",
-  multilingual: "¡Hostia! Quel bordel! Ach, kacken. Cabrón.",
-};
-
-let checker = new ProfanityChecker();
-
-function readOptions(): void {
-  const languages = ["en", "es", "fr", "de"].filter((l) => input(`lang-${l}`).checked);
-  checker = new ProfanityChecker({
-    languages,
-    wholeWord: input("opt-whole").checked,
-    leet: input("opt-leet").checked,
-    stripDiacritics: input("opt-diacritics").checked,
-  });
-}
-
-function render(): void {
-  const text = area("demo-input").value;
-  const mask = input("opt-mask").value || "*";
-  const t0 = performance.now();
-  const matches = checker.find(text);
-  const ms = performance.now() - t0;
-
-  const verdict = $("demo-verdict");
-  verdict.textContent = matches.length > 0 ? "PROFANE" : "CLEAN";
-  verdict.dataset.state = matches.length > 0 ? "bad" : "good";
-
-  $("demo-count").textContent =
-    `${matches.length} match${matches.length === 1 ? "" : "es"} · ${ms.toFixed(2)} ms · ${checker.size} patterns`;
-
-  const body = $("demo-rows");
-  body.replaceChildren();
-  for (const m of matches) {
-    const tr = document.createElement("tr");
-    for (const cell of [m.word, String(m.start), String(m.end)]) {
-      const td = document.createElement("td");
-      td.textContent = cell;
-      tr.appendChild(td);
-    }
-    body.appendChild(tr);
-  }
-  if (matches.length === 0) {
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.colSpan = 3;
-    td.textContent = "—";
-    tr.appendChild(td);
-    body.appendChild(tr);
-  }
-
-  $("demo-censored").textContent = checker.censor(text, mask[0] ?? "*");
-}
-
-for (const [name, text] of Object.entries(PRESETS)) {
-  $(`preset-${name}`).addEventListener("click", () => {
-    area("demo-input").value = text;
-    render();
-  });
-}
-
-for (const id of [
-  "lang-en",
-  "lang-es",
-  "lang-fr",
-  "lang-de",
-  "opt-whole",
-  "opt-leet",
-  "opt-diacritics",
-]) {
-  input(id).addEventListener("change", () => {
-    readOptions();
-    render();
-  });
-}
-input("opt-mask").addEventListener("input", render);
-area("demo-input").addEventListener("input", render);
+// Page shell: behaviour that belongs to the site itself rather than to any one
+// package's section. Per-package wiring lives in ./content/<package>.ts and is
+// registered at the bottom — adding a package means adding a module and one
+// line there, not editing anything above it.
+import { onCopyClick } from "./dom.js";
+import { initCoreDemo } from "./content/core.js";
 
 // The inline head script has already applied any stored choice; this only
 // handles switching it afterwards. Reading the computed state rather than the
@@ -133,35 +41,6 @@ document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
 //
 // `text` is read at click time, not now: for the package-manager tabs the
 // snippet depends on which tab is selected when the button is pressed.
-// Copies, then confirms on the element for a couple of seconds and puts it
-// back. Shared by the code-block buttons and the heading anchors: both write to
-// the clipboard and both have to survive a denied permission without claiming a
-// copy that did not happen.
-function onCopyClick(
-  el: HTMLElement,
-  text: () => string,
-  confirm: (copied: boolean) => void,
-): void {
-  let reset: number | undefined;
-  el.addEventListener("click", async (event) => {
-    // A heading anchor is a real link, so a modified click (new tab) and the
-    // context menu still behave; only a plain click is taken over.
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-
-    try {
-      await navigator.clipboard.writeText(text());
-    } catch {
-      // Denied permission or an insecure context — say nothing rather than
-      // claiming a copy that did not happen.
-      return;
-    }
-    confirm(true);
-    clearTimeout(reset);
-    reset = window.setTimeout(() => confirm(false), 2000);
-  });
-}
-
 function copyButton(text: () => string): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
@@ -246,5 +125,6 @@ document.querySelectorAll<HTMLElement>("main :is(h2, h3)").forEach((heading) => 
   heading.appendChild(link);
 });
 
-readOptions();
-render();
+// Per-package sections. Each init is a no-op when its section is absent, so a
+// module can be registered before its markup lands and the page still works.
+initCoreDemo();

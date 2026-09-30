@@ -7,14 +7,11 @@
     "strict": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "sourceMap": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["src", "test"]
+  "include": ["main.ts", "content"]
 }

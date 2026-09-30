@@ -39,8 +39,8 @@ Per-package work runs through a filter:
 ```bash
 pnpm --filter @bleepit/core test:watch
 pnpm --filter @bleepit/core bench
-pnpm --filter @bleepit/core site:build
 pnpm --filter @bleepit/ocr test
+pnpm site:build
 ```
 
 ## The packages
@@ -49,6 +49,7 @@ pnpm --filter @bleepit/ocr test
 |---|---|
 | [`@bleepit/core`](packages/core) | The profanity checker. Aho-Corasick automaton, normalizer, wordlists. |
 | [`@bleepit/ocr`](packages/ocr) | Image support: OCR adapter and match-to-box mapping. |
+| [`@bleepit/site`](packages/site) | The docs site and live demo. Private — never published. |
 
 ## What belongs here
 
@@ -200,21 +201,34 @@ produced — which is what covers a build compromised between the two.
 
 ### The demo site
 
-`packages/core/site/` deploys to GitHub Pages on any push to `main` that
-touches the site or the library source.
+`packages/site/` deploys to GitHub Pages on any push to `main` that touches the
+site or any package's `src/`.
+
+The site is its own private workspace package, and it depends on the packages it
+documents rather than living inside one of them. That is what lets it cover the
+whole project: it imports `@bleepit/core` and `@bleepit/ocr` by name, the same
+entry points a user installs, so a demo exercises the published surface rather
+than a relative path into someone else's source.
+
+**Adding a package to the site** is three steps, none of which touch the
+existing ones:
+
+1. Add it to the site's `dependencies` (`workspace:*`).
+2. Add `content/<package>.ts` exporting an `init…()` that no-ops when its
+   section is absent from the page.
+3. Add its markup, a nav link, and one call in `main.ts`.
 
 The workflow rebuilds the bundle rather than deploying the committed one, so
 the live demo cannot drift from the library it demonstrates. `bleepit.bundle.js`
-is checked in for convenience, but it is a build artifact — edit `site/main.ts`
-and run `pnpm site:build`. CI warns when the committed copy no longer matches a
-fresh build.
+is checked in for convenience, but it is a build artifact — edit `main.ts` (or a
+`content/` module) and run `pnpm site:build`. CI warns when the committed copy no
+longer matches a fresh build.
 
-Styling is Tailwind. Edit `site/styles.css` — the semantic colour tokens at the
-top and the component classes below it — and run `pnpm site:build`, which
-compiles `site/styles.build.css`. That file is generated and gitignored, so
-never edit or commit it. Prefer an existing token over a raw colour: each one
-is defined twice, light and dark, and a literal hex will look wrong in one of
-them.
+Styling is Tailwind. Edit `styles.css` — the semantic colour tokens at the top
+and the component classes below it — and run `pnpm site:build`, which compiles
+`styles.build.css`. That file is generated and gitignored, so never edit or
+commit it. Prefer an existing token over a raw colour: each one is defined
+twice, light and dark, and a literal hex will look wrong in one of them.
 
 Two things the page is expected to hold to, both easy to break:
 
