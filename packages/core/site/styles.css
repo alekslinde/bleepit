@@ -176,6 +176,79 @@
            font-mono text-sm text-fg;
   }
 
+  /* Injected by the bundle: a non-scrolling parent for the <pre>, so the copy
+     button can be positioned against the block's visible corner. Anchoring it
+     inside the <pre> instead would scroll it out of reach on a long line. */
+  .code-figure {
+    @apply relative;
+  }
+
+  /* The button overlaps the block's top-right corner. A long line still scrolls
+     beneath it, so it carries a gradient gutter (below) that fades the code out
+     rather than letting it vanish mid-glyph behind an opaque edge. */
+  .code-copy {
+    @apply absolute top-1.5 right-1.5 z-10 flex size-11 cursor-pointer
+           items-center justify-center rounded-lg border text-muted
+           hover:text-fg;
+  }
+
+  /* Sits behind the button, spanning the full height of the block's first rows,
+     so the fade covers every line the button overlaps. `pointer-events-none`
+     keeps the code underneath selectable. */
+  .code-copy::before {
+    @apply pointer-events-none absolute top-[-0.375rem] right-[-0.375rem]
+           -z-10 h-[calc(100%+0.75rem)] w-[calc(100%+1.5rem)] content-[''];
+  }
+
+  /* Each block's own surface, so the button reads as part of it. The dark
+     blocks keep their palette regardless of theme, hence the fixed tokens
+     rather than `line`/`muted`. */
+  .code-block-light + .code-copy {
+    @apply border-line bg-soft;
+  }
+
+  .code-block-light + .code-copy::before {
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-soft) 2.25rem
+    );
+  }
+
+  .code-block + .code-copy {
+    @apply border-white/20 bg-code-bg text-code-fg/70 hover:text-code-fg;
+  }
+
+  .code-block + .code-copy::before {
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-code-bg) 2.25rem
+    );
+  }
+
+  /* Swap the clipboard for a tick while the "copied" state is on. */
+  .code-copy[data-copied] {
+    @apply text-good;
+  }
+
+  /* The dark blocks keep their dark surface in both themes, so the tick takes
+     the dark-mode green there — the light-mode one sits at ~3.6:1 on #111. */
+  .code-block + .code-copy[data-copied] {
+    color: var(--dark-good);
+  }
+
+  .code-copy[data-copied] .code-copy-idle,
+  .code-copy:not([data-copied]) .code-copy-done {
+    @apply hidden;
+  }
+
+  /* Room for the button. Applied only once the bundle has wrapped the block, so
+     an unenhanced page keeps its original padding and no dead gutter. */
+  .code-figure > :is(.code-block, .code-block-light) {
+    @apply pr-16;
+  }
+
   .code-inline {
     @apply rounded-[5px] border border-line bg-soft px-1.5 py-px
            font-mono text-[0.88em];
