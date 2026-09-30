@@ -167,9 +167,13 @@ surprises you.
 ## Releases
 
 Releases are automated and run from CI. Maintainers do not publish from a
-laptop — the token stays in the repo's secrets, and each tarball carries a
-provenance attestation tying it to the commit and workflow run that built it,
-which a local publish cannot produce.
+laptop: CI authenticates to npm over OIDC, and each tarball carries a provenance
+attestation tying it to the commit and workflow run that built it, which a local
+publish cannot produce. No publishing token exists anywhere in the repo.
+
+CI can only *stage* a release. Staged versions sit pending on npm and are not
+installable until a maintainer approves them with 2FA, so no workflow run can
+put code in front of users on its own.
 
 The loop, once a PR with a changeset lands on `main`:
 
@@ -179,10 +183,20 @@ The loop, once a PR with a changeset lands on `main`:
 2. Review that PR like any other. It is the last point where a wrong bump is
    cheap to fix.
 3. Merging it runs the workflow again. With no changesets left to consume, it
-   builds, re-runs lint and tests against the merge commit, and publishes.
+   builds, re-runs lint and tests against the merge commit, stages the tarballs,
+   and pushes the git tags.
+4. Approve the staged versions, which requires 2FA and cannot be done from CI:
 
-So a release is always a reviewed, merged PR. Nothing publishes from a direct
-push.
+   ```bash
+   pnpm stage list       # what is pending
+   pnpm stage approve    # release it
+   ```
+
+   The **Staged Packages** tab on npmjs.com does the same thing.
+
+So a release is always a reviewed, merged PR *and* an approved artifact.
+Merging reviews the version bump; approving reviews the tarball that bump
+produced — which is what covers a build compromised between the two.
 
 ### The demo site
 
@@ -221,12 +235,21 @@ here to be found when something fails:
 
 | What | Where | Needed for |
 |---|---|---|
-| `NPM_TOKEN` | Repo → Secrets → Actions | Publishing. A granular token scoped to the published packages, read+write |
+| Trusted publisher | npmjs.com → each package → Settings | Releasing. One per published package |
 | Pages source | Repo → Pages → **GitHub Actions** | The demo deploy. The workflow fails without it |
-| npm org | npmjs.com | Scoped packages cannot publish until the scope exists |
+| npm org | npmjs.com | Scoped packages cannot be released until the scope exists |
 
-A token that has expired surfaces as `ENEEDAUTH` on the publish step, not as
-anything more descriptive.
+Each package's trusted publisher takes the repository name on its own, the
+workflow filename on its own (not a path), and an empty environment — the
+release job declares no `environment:`, so a value there fails the match. Leave
+**Allow `npm publish`** unchecked: staging is the intended path, and enabling
+direct publish would let a workflow run reach installers without an approval.
+
+A trusted publisher that does not match the run surfaces as **404 Not Found** on
+the staging step. The registry does not distinguish "not authorized" from "does
+not exist" for a writer it has not authenticated, so a 404 there means the
+credential was rejected, not that the package is missing — check the fields
+above before looking anywhere else.
 
 ## Pull requests
 

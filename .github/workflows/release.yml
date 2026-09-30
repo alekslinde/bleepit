@@ -63,7 +63,14 @@ jobs:
       #   - changesets present -> opens/updates a "Version Packages" PR
       #   - none present (that PR was merged) -> runs `publish`
       # So a release is always a reviewed, merged PR, never a direct push.
-      - name: Create version PR or publish
+      #
+      # Despite the step name, `publish` here stages rather than publishes. CI
+      # uploads the tarballs and they sit pending until a maintainer approves
+      # them with 2FA, so nothing this workflow does can reach installers on its
+      # own. Merging the version PR reviews the version bump; approving the
+      # stage reviews the artifact that bump produced, which is the step that
+      # covers a build compromised between the two.
+      - name: Create version PR or stage release
         uses: changesets/action@v1
         with:
           # `pnpm run`, not `pnpm <script>`: pnpm has a built-in `version`
@@ -84,13 +91,8 @@ jobs:
           # while implying to anyone reading that a token is what signs a
           # release.
           #
-          # No provenance env var is set here, because nothing in this path
-          # would read one. The publish runs through `pnpm publish` — changesets
-          # selects its client from the workspace tool, so npm is not involved —
-          # and pnpm takes provenance only from a `--provenance` flag, which
-          # changesets builds its own hardcoded arg list without. It does not
-          # read NPM_CONFIG_PROVENANCE. `publishConfig.provenance` in each
-          # manifest is therefore aspirational for now: it documents the intent
-          # and is what npm would honor, but pnpm does not derive the option
-          # from it. Releases publish over OIDC without an attestation until
-          # changesets can forward the flag.
+          # Provenance is requested by `--provenance` in the release script,
+          # not by an env var: pnpm reads the flag but not NPM_CONFIG_PROVENANCE.
+          # `changeset publish` could not pass it — it builds a hardcoded arg
+          # list — which is part of why the release script drives
+          # `pnpm stage publish` directly instead.
