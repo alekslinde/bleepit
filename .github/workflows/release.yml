@@ -36,10 +36,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          # 24, not the 22 that CI's matrix floors at: publishing here happens
+          # over OIDC (npm trusted publishing), which the npm CLI only supports
+          # from 11.5.1, and Node 22 still bundles npm 10.x. On an older npm the
+          # OIDC token is never exchanged for a registry credential, so the
+          # publish goes out unauthenticated and the registry answers `E404 Not
+          # Found` on the PUT — it will not confirm a package exists to a writer
+          # it has not authenticated. That reads as a missing package rather
+          # than a missing credential, so it is worth naming here.
+          node-version: "24"
           cache: pnpm
-          # Writes the .npmrc that NODE_AUTH_TOKEN below authenticates against.
-          # Without it, publish fails with ENEEDAUTH despite the secret being set.
+          # Points npm at the registry it performs the OIDC exchange against.
+          # Without it there is no registry configured to authenticate to.
           registry-url: "https://registry.npmjs.org"
 
       - run: pnpm install --frozen-lockfile
@@ -68,7 +76,16 @@ jobs:
           title: "chore(config): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # No npm credential is passed: each package names this workflow as a
+          # trusted publisher, so authentication is the OIDC token that
+          # `id-token: write` above grants. Setting an empty NODE_AUTH_TOKEN
+          # here is worse than setting none — changesets picks the auth mode by
+          # checking for that variable, and an empty one still reads as absent
+          # while implying to anyone reading that a token is what signs a
+          # release.
+          #
           # Consumed by npm itself, not by changesets: turns on the provenance
-          # attestation that publishConfig requests in each manifest.
+          # attestation that publishConfig requests in each manifest. Provenance
+          # is only attachable over OIDC, so a published version carrying an
+          # attestation is the signal that this path worked.
           NPM_CONFIG_PROVENANCE: "true"
