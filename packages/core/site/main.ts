@@ -17,11 +17,11 @@ function area(id: string): HTMLTextAreaElement {
 const PRESETS: Record<string, string> = {
   clean:
     "The class discussed the Scunthorpe problem and nobody was offended.",
-  profane: "You absolute bastard. What a douche — total bollocks.",
+  profane: "He called me an arse and a douche. Utter bollocks.",
   // Separators, elongation and leet in one line, so the demo shows all three
   // normalization paths rather than claiming them.
-  obfuscated: "You absolute b.a.s.t.a.r.d, what a d0uchhhhe, utter b0ll0cks.",
-  multilingual: "Qué mierda! Putain! Du Idiot! Scheiße.",
+  obfuscated: "He called me an a.r.s.e and a d0uchhhhe. Utter b0ll0cks.",
+  multilingual: "¡Hostia! Quel bordel! Ach, kacken. Cabrón.",
 };
 
 let checker = new ProfanityChecker();

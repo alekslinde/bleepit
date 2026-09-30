@@ -78,7 +78,7 @@
     </div>
     <label for="demo-input" class="sr-only">Text to check for profanity</label>
     <textarea id="demo-input" rows="3"
-              class="w-full resize-y rounded-lg border border-line bg-bg px-3 py-2.5 font-sans text-base">You absolute b.a.s.t.a.r.d, what a d0uchhhhe, utter b0ll0cks.</textarea>
+              class="w-full resize-y rounded-lg border border-line bg-bg px-3 py-2.5 font-sans text-base">He called me an a.r.s.e and a d0uchhhhe. Utter b0ll0cks.</textarea>
     <fieldset class="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-line bg-soft px-3.5 py-2 text-sm">
       <legend class="sr-only">Checker options</legend>
       <label class="flex min-h-11 cursor-pointer items-center gap-1.5"><input type="checkbox" id="lang-en" class="size-4 accent-accent" checked /> en</label>
@@ -126,11 +126,11 @@ import { es } from "@bleepit/core/lists"; // individual lists for tiny bundles</
 
 const checker = new ProfanityChecker({ languages: ["en", "es"] });
 
-checker.isProfane("What the f.u.c.k?!"); // true
-checker.isProfane("shiiiiiit");          // true (elongation)
-checker.isProfane("sh1t");               // true (leet-speak)
-checker.isProfane("the class");          // false (word boundaries)
-checker.censor("You are a b1tch");       // "You are a *****"</code></pre>
+checker.isProfane("What an a.r.s.e?!");   // true
+checker.isProfane("arrrse");              // true (elongation)
+checker.isProfane("@rse");                // true (leet-speak)
+checker.isProfane("the class");           // false (word boundaries)
+checker.censor("That was a d0uche move"); // "That was a ****** move"</code></pre>
 </section>
 
 <section id="api" class="section">
@@ -153,7 +153,7 @@ checker.censor("You are a b1tch");       // "You are a *****"</code></pre>
 <pre class="code-block-light"><code>import { createChecker, isProfane, find, censor } from "@bleepit/core";
 
 const mine = createChecker({ languages: ["fr"] }); // isolated instance
-isProfane("fuck"); // uses the shared default (English) instance</code></pre>
+isProfane("bollocks"); // uses the shared default (English) instance</code></pre>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Options</h3>
   <div class="table-scroll">
     <table class="data-table">
@@ -187,21 +187,21 @@ isProfane("fuck"); // uses the shared default (English) instance</code></pre>
 <pre class="code-block-light mt-3"><code>import { createChecker } from "@bleepit/core";
 
 // Any script works — normalization is unicode-aware:
-const c = createChecker({ languages: [], customWords: ["сука", "クソ"] });
-c.isProfane("ах ты СУКА"); // true (case-insensitive Cyrillic)
+const c = createChecker({ languages: [], customWords: ["чёрт", "クソ"] });
+c.isProfane("вот ЧЁРТ"); // true (case-insensitive Cyrillic)
 
 // Spaceless scripts have no word boundaries — use substring mode:
-const zh = createChecker({ languages: [], customWords: ["他妈的"], wholeWord: false });</code></pre>
+const zh = createChecker({ languages: [], customWords: ["笨蛋"], wholeWord: false });</code></pre>
 </section>
 
 <section id="guides" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Guides</h2>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Word boundaries (the Scunthorpe problem)</h3>
-  <p class="prose-width">With <code class="code-inline">wholeWord: true</code> (default), matches must sit on word boundaries checked against the <em>original</em> text, so separators still split words while <code class="code-inline">f.u.c.k</code> is caught:</p>
+  <p class="prose-width">With <code class="code-inline">wholeWord: true</code> (default), matches must sit on word boundaries checked against the <em>original</em> text, so separators still split words while <code class="code-inline">a.r.s.e</code> is caught:</p>
 <pre class="code-block-light mt-2"><code>checker.isProfane("the class");      // false
 checker.isProfane("Scunthorpe");     // false
-checker.isProfane("fuck you");       // true
-checker.isProfane("f.u.c.k you");    // true</code></pre>
+checker.isProfane("arse about");     // true
+checker.isProfane("a.r.s.e about");  // true</code></pre>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Whitelisting</h3>
 <pre class="code-block-light"><code>const c = createChecker({ whitelist: ["arsenal"] });
 c.isProfane("arsenal"); // false</code></pre>
@@ -209,8 +209,8 @@ c.isProfane("arsenal"); // false</code></pre>
 <pre class="code-block-light"><code>checker.addWords(["heck"]);       // community-driven lists
 checker.removeWords(["bollocks"]); // tune false positives away</code></pre>
   <h3 class="mt-6 mb-2 text-[19px] font-semibold">Censoring</h3>
-<pre class="code-block-light"><code>checker.censor("You are a b1tch", "*"); // "You are a *****"
-checker.censor("oh shit", "#");         // "oh ####"</code></pre>
+<pre class="code-block-light"><code>checker.censor("a d0uche move", "*"); // "a ****** move"
+checker.censor("oh bollocks", "#");   // "oh ########"</code></pre>
 </section>
 
 <section id="integrations" class="section">
@@ -256,8 +256,8 @@ Deno.serve((req) =&gt; {
   <ol class="prose-width list-decimal space-y-2 pl-5">
     <li><strong>Normalize</strong> — one pass folds case, diacritics (NFKD), ligatures (<code class="code-inline">ß→ss</code>), and leet-speak, drops separators, and records original offsets.</li>
     <li><strong>Scan</strong> — an Aho-Corasick automaton matches all patterns in a single <code class="code-inline">O(n)</code> pass, independent of dictionary size.</li>
-    <li><strong>Repeat tolerance</strong> — a repeated char takes a direct trie transition when one exists (keeps <code class="code-inline">as ≠ ass</code>) and is otherwise skipped (catches <code class="code-inline">fuuuuck</code>).</li>
-    <li><strong>Validate</strong> — boundaries and whitelist are checked against the original text, so <code class="code-inline">f.u.c.k</code> flags while <code class="code-inline">class</code> does not.</li>
+    <li><strong>Repeat tolerance</strong> — a repeated char takes a direct trie transition when one exists (keeps <code class="code-inline">as ≠ ass</code>) and is otherwise skipped (catches <code class="code-inline">bollllocks</code>).</li>
+    <li><strong>Validate</strong> — boundaries and whitelist are checked against the original text, so <code class="code-inline">a.r.s.e</code> flags while <code class="code-inline">class</code> does not.</li>
   </ol>
 </section>
 
@@ -274,7 +274,7 @@ Deno.serve((req) =&gt; {
 
 <section id="limitations" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Limitations</h2>
-  <p class="prose-width"><strong>Single-character masking</strong> (<code class="code-inline">f*ck</code>, <code class="code-inline">sh*t</code>) is intentionally out of scope: a <code class="code-inline">*</code> can stand for any letter, so reliable matching needs edit-distance search, which would break the lightweight / <code class="code-inline">O(n)</code> guarantees. Workaround: add the variants you care about via <code class="code-inline">customWords</code>.</p>
+  <p class="prose-width"><strong>Single-character masking</strong> (<code class="code-inline">a*se</code>, <code class="code-inline">b*llocks</code>) is intentionally out of scope: a <code class="code-inline">*</code> can stand for any letter, so reliable matching needs edit-distance search, which would break the lightweight / <code class="code-inline">O(n)</code> guarantees. Workaround: add the variants you care about via <code class="code-inline">customWords</code>.</p>
   <p class="prose-width mt-3">No filter is perfect — pair automated checks with reporting and human review for high-stakes moderation.</p>
 </section>
 
@@ -284,7 +284,7 @@ Deno.serve((req) =&gt; {
     <summary class="cursor-pointer py-1 font-semibold">Does it work in the browser / workers / edge runtimes?</summary>
     <p class="prose-width mt-2">Yes. Zero dependencies and no Node APIs — it runs anywhere JavaScript runs, including Cloudflare Workers and Deno Deploy.</p></details>
   <details class="my-2 rounded-lg border border-line px-3.5 py-2.5">
-    <summary class="cursor-pointer py-1 font-semibold">Why is “Scunthorpe” clean but “f.u.c.k” flagged?</summary>
+    <summary class="cursor-pointer py-1 font-semibold">Why is “Scunthorpe” clean but “a.r.s.e” flagged?</summary>
     <p class="prose-width mt-2">Boundaries are checked against the original text. Letters block a match (<code class="code-inline">class</code>), while separators are obfuscation and get skipped.</p></details>
   <details class="my-2 rounded-lg border border-line px-3.5 py-2.5">
     <summary class="cursor-pointer py-1 font-semibold">Can I add my own language?</summary>
