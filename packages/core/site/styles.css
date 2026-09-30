@@ -146,11 +146,10 @@
            text-muted no-underline hover:text-fg;
   }
 
-  /* Same link as a full-width row in the mobile menu: 44px tap target, and a
-     hairline between rows rather than around each one. */
-  .nav-link-block {
-    @apply flex min-h-11 items-center border-b border-line text-[15px]
-           text-fg no-underline last:border-b-0 hover:text-accent;
+  /* Outbound links in the hero, shown as marks rather than words. */
+  .icon-link {
+    @apply inline-flex size-11 items-center justify-center rounded-lg text-muted
+           no-underline hover:text-fg;
   }
 
   .btn {

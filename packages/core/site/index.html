@@ -22,61 +22,14 @@
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-line focus:bg-bg focus:px-4 focus:py-2">Skip to content</a>
 
 <nav class="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur-sm">
-  <!-- Two presentations of one link list. Below `sm` it collapses into a
-       disclosure menu; from `sm` up the same links sit inline in the bar.
-       `<details>` rather than a scripted dropdown so the menu still opens if
-       the bundle fails to load, and so Esc and keyboard focus come for free. -->
-  <details id="nav-menu" class="group sm:hidden">
-    <!-- `<summary>` must be the details' first direct child, so the whole bar
-         row lives inside it rather than wrapping it: nest it in a div and the
-         browser treats the bar as collapsible content and clips it. `list-none`
-         plus the WebKit pseudo-element drop the default disclosure marker. -->
-    <summary class="wrap flex h-14 cursor-pointer list-none items-center gap-x-3 [&::-webkit-details-marker]:hidden">
-      <b class="shrink-0 text-lg">bleepit</b>
-      <div class="flex flex-1 items-center justify-end gap-x-3">
-        <!-- Inside the summary, so a click here would toggle the menu too;
-             the bundle calls preventDefault to keep the two separate. -->
-        <button type="button" data-theme-toggle aria-label="Switch between light and dark theme"
-                class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-line text-muted hover:text-fg">
-          <svg class="size-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-          <svg class="hidden size-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        </button>
-        <span class="flex size-11 items-center justify-center rounded-lg border border-line text-muted">
-          <svg class="size-4 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-          <svg class="hidden size-4 group-open:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-          <span class="sr-only">Navigation menu</span>
-        </span>
-      </div>
-    </summary>
-    <!-- Panel scrolls if the viewport is short (landscape phone), capped so the
-         bar itself never leaves the screen. -->
-    <div class="max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-line bg-bg pb-2">
-      <div class="wrap flex flex-col">
-        <a class="nav-link-block" href="#demo">Demo</a>
-        <a class="nav-link-block" href="#install">Install</a>
-        <a class="nav-link-block" href="#api">API</a>
-        <a class="nav-link-block" href="#languages">Languages</a>
-        <a class="nav-link-block" href="#guides">Guides</a>
-        <a class="nav-link-block" href="#faq">FAQ</a>
-        <a class="nav-link-block" href="https://github.com/alekslinde/bleepit">GitHub</a>
-        <a class="nav-link-block" href="https://www.npmjs.com/package/@bleepit/core">npm</a>
-      </div>
-    </div>
-  </details>
-
-  <div class="wrap hidden h-14 items-center gap-x-3 sm:flex sm:gap-x-[18px]">
+  <!-- Three links fit inline at every width, so there is no mobile menu to
+       open: the same bar serves phone and desktop. -->
+  <div class="wrap flex h-14 items-center gap-x-3">
     <b class="shrink-0 text-lg">bleepit</b>
-    <!-- min-w-0 lets this flex child shrink below its content width, which is
-         what allows the overflow to scroll rather than stretch the bar. -->
-    <div class="flex min-w-0 flex-1 items-center gap-x-4 overflow-x-auto sm:justify-end sm:gap-x-[18px]">
-      <a class="nav-link" href="#demo">Demo</a>
-      <a class="nav-link" href="#install">Install</a>
-      <a class="nav-link" href="#api">API</a>
-      <a class="nav-link" href="#languages">Languages</a>
-      <a class="nav-link" href="#guides">Guides</a>
+    <div class="flex flex-1 items-center justify-end gap-x-2 sm:gap-x-4">
+      <a class="nav-link" href="#docs">Docs</a>
       <a class="nav-link" href="#faq">FAQ</a>
-      <a class="nav-link" href="https://github.com/alekslinde/bleepit">GitHub</a>
-      <a class="nav-link" href="https://www.npmjs.com/package/@bleepit/core">npm</a>
+      <a class="nav-link" href="#about">About</a>
     </div>
     <button type="button" data-theme-toggle aria-label="Switch between light and dark theme"
             class="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-line text-muted hover:text-fg">
@@ -117,9 +70,19 @@
 <pre class="code-block pm-panel" data-pm="bun"><code>bun add @bleepit/core</code></pre>
 <pre class="code-block pm-panel" data-pm="deno"><code>deno add npm:@bleepit/core</code></pre>
   </div>
-  <div class="mt-4 flex flex-wrap gap-2.5">
+  <div class="mt-4 flex flex-wrap items-center gap-2.5">
     <a class="btn btn-primary" href="#demo">Try the live demo</a>
-    <a class="btn" href="#install">Read the docs</a>
+    <a class="btn" href="#docs">Read the docs</a>
+    <!-- Moved out of the nav: outbound links belong with the hero's other
+         calls to action, and keep the bar down to the three page sections. -->
+    <a class="icon-link" href="https://github.com/alekslinde/bleepit" aria-label="bleepit on GitHub">
+      <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.8 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+    </a>
+    <!-- npm's wordmark is unreadable at icon size, so this is its square mark:
+         a filled tile with the glyph knocked out via `evenodd`. -->
+    <a class="icon-link" href="https://www.npmjs.com/package/@bleepit/core" aria-label="@bleepit/core on npm">
+      <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true"><path d="M2 2h20v20H2V2zm4.5 4.5v11h5.25V9.25h2.75v8.25h2.5V9.25h1.5v8.25h1.5v-11H6.5z"/></svg>
+    </a>
   </div>
 </header>
 
@@ -165,6 +128,10 @@
     <div class="rounded-lg border border-line bg-soft px-3.5 py-2.5 break-words whitespace-pre-wrap" id="demo-censored"></div>
   </div>
 </section>
+
+<!-- The three nav targets are wrappers, not new content: each groups the
+     sections that were previously linked one by one. -->
+<div id="docs">
 
 <section id="install" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Installation</h2>
@@ -324,6 +291,10 @@ Deno.serve((req) =&gt; {
 });</code></pre>
 </section>
 
+</div><!-- /#docs -->
+
+<div id="about">
+
 <section id="how" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">How it works</h2>
   <ol class="prose-width list-decimal space-y-2 pl-5">
@@ -351,6 +322,8 @@ Deno.serve((req) =&gt; {
   <p class="prose-width mt-3"><strong>Coverage is the lists you load.</strong> There is no language detection — a word that is not in a loaded list or in <code class="code-inline">customWords</code> is never flagged. Four starter lists ship (<code class="code-inline">en</code>, <code class="code-inline">es</code>, <code class="code-inline">fr</code>, <code class="code-inline">de</code>), and everything else needs adding explicitly. That includes close cousins of a language you have loaded: Portuguese <code class="code-inline">merda</code> is not matched by Spanish <code class="code-inline">mierda</code>, and Swedish <code class="code-inline">skit</code> is not matched by English <code class="code-inline">shit</code>.</p>
   <p class="prose-width mt-3">No filter is perfect — pair automated checks with reporting and human review for high-stakes moderation, especially for communities whose languages you do not speak.</p>
 </section>
+
+</div><!-- /#about -->
 
 <section id="faq" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">FAQ</h2>
