@@ -2,6 +2,10 @@ packages:
   - "packages/*"
 
 allowBuilds:
+  # Tailwind pulls this in for its --watch mode only. The site build is a
+  # one-shot CLI invocation, so the native binary is never needed and its
+  # postinstall stays unrun.
+  '@parcel/watcher': false
   esbuild: true
 
 overrides:

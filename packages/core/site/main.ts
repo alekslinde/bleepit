@@ -97,5 +97,21 @@ for (const id of [
 input("opt-mask").addEventListener("input", render);
 area("demo-input").addEventListener("input", render);
 
+// The inline head script has already applied any stored choice; this only
+// handles switching it afterwards. Reading the computed state rather than the
+// attribute means the first click flips away from the OS preference, instead
+// of setting the theme the user is already looking at.
+$("theme-toggle").addEventListener("click", () => {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try {
+    localStorage.setItem("bleepit-theme", next);
+  } catch {
+    // Private mode — the toggle still works for this page view.
+  }
+});
+
 readOptions();
 render();

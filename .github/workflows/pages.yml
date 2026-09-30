@@ -47,6 +47,10 @@ jobs:
       # above changed it, the two have drifted and the repo is misleading
       # anyone reading the checked-in file. Deploy still proceeds — the built
       # output is correct either way — but the log flags it.
+      #
+      # Only the JS bundle is checked: the compiled stylesheet is generated at
+      # build time and deliberately not committed, so it has nothing to drift
+      # from.
       - name: Warn if the committed bundle was stale
         run: |
           if ! git diff --quiet -- packages/core/site/bleepit.bundle.js; then
