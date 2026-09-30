@@ -13,7 +13,7 @@
     "size": "pnpm --filter @bleepit/core size",
     "changeset": "changeset",
     "version:packages": "changeset version",
-    "release": "pnpm -r build && pnpm -r --filter \"./packages/*\" stage publish --access public --provenance --no-git-checks && changeset git-tag"
+    "release": "pnpm -r build && pnpm -r --filter \"./packages/*\" stage publish --access public --provenance --no-git-checks && changeset git-tag && git push --tags"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
