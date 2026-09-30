@@ -133,14 +133,22 @@ document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
 //
 // `text` is read at click time, not now: for the package-manager tabs the
 // snippet depends on which tab is selected when the button is pressed.
-function copyButton(text: () => string): HTMLButtonElement {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "code-copy";
-  button.textContent = "Copy";
-
+// Copies, then confirms on the element for a couple of seconds and puts it
+// back. Shared by the code-block buttons and the heading anchors: both write to
+// the clipboard and both have to survive a denied permission without claiming a
+// copy that did not happen.
+function onCopyClick(
+  el: HTMLElement,
+  text: () => string,
+  confirm: (copied: boolean) => void,
+): void {
   let reset: number | undefined;
-  button.addEventListener("click", async () => {
+  el.addEventListener("click", async (event) => {
+    // A heading anchor is a real link, so a modified click (new tab) and the
+    // context menu still behave; only a plain click is taken over.
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+
     try {
       await navigator.clipboard.writeText(text());
     } catch {
@@ -148,11 +156,19 @@ function copyButton(text: () => string): HTMLButtonElement {
       // claiming a copy that did not happen.
       return;
     }
-    button.textContent = "Copied";
+    confirm(true);
     clearTimeout(reset);
-    reset = window.setTimeout(() => {
-      button.textContent = "Copy";
-    }, 2000);
+    reset = window.setTimeout(() => confirm(false), 2000);
+  });
+}
+
+function copyButton(text: () => string): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "code-copy";
+  button.textContent = "Copy";
+  onCopyClick(button, text, (copied) => {
+    button.textContent = copied ? "Copied" : "Copy";
   });
   return button;
 }
@@ -192,6 +208,43 @@ if (navigator.clipboard) {
     figure.append(pre, copyButton(() => code.textContent ?? ""));
   });
 }
+
+// A copyable link on every section heading. Injected rather than written into
+// the HTML so the markup stays one heading per section, and so a visitor
+// without the bundle sees plain headings instead of dead "#" glyphs.
+//
+// An h2's target is its enclosing <section>, which already carries the id the
+// nav links to; an h3 carries its own. A heading with neither is skipped rather
+// than given a generated id — a slug derived from the text would change
+// whenever the wording did, quietly breaking every link already shared.
+document.querySelectorAll<HTMLElement>("main :is(h2, h3)").forEach((heading) => {
+  const id = heading.id || heading.closest("section")?.id;
+  if (!id) return;
+
+  const link = document.createElement("a");
+  link.className = "heading-anchor";
+  link.href = `#${id}`;
+  link.textContent = "#";
+  // The glyph alone reads as punctuation; the label names what the link is for
+  // and which heading it belongs to.
+  link.setAttribute("aria-label", `Copy link to ${heading.textContent?.trim()}`);
+
+  if (navigator.clipboard) {
+    onCopyClick(
+      link,
+      () => new URL(`#${id}`, location.href).href,
+      (copied) => {
+        link.textContent = copied ? "✓" : "#";
+        link.dataset.copied = String(copied);
+        // The address bar follows the copied link, so a reload or a later
+        // share from the browser's own UI lands in the same place.
+        if (copied) history.replaceState(null, "", `#${id}`);
+      },
+    );
+  }
+
+  heading.appendChild(link);
+});
 
 readOptions();
 render();

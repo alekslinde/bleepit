@@ -287,6 +287,38 @@
     @apply border-t border-line py-9;
   }
 
+  /* Injected by the bundle: a per-heading link to that heading. Kept inside the
+     heading so its text is part of the heading's accessible name only via the
+     aria-label on the link itself, which names the section rather than reading
+     as a stray "#". */
+  .heading-anchor {
+    @apply ml-2 inline-flex size-11 cursor-pointer items-center justify-center
+           rounded-md border-0 bg-transparent align-middle font-mono text-base
+           text-muted no-underline hover:text-accent;
+  }
+
+  /* Hidden until the heading is hovered or the link itself is focused, so the
+     page reads clean while the target stays reachable by keyboard. On touch,
+     where there is no hover, it is always visible. */
+  @media (hover: hover) {
+    .heading-anchor {
+      @apply opacity-0;
+    }
+
+    :is(h2, h3):hover > .heading-anchor,
+    .heading-anchor:focus-visible {
+      @apply opacity-100;
+    }
+  }
+
+  /* Confirms a copy without resizing: the glyph swaps in place, so the heading
+     never reflows. Stays visible through the confirmation even unhovered,
+     otherwise the click would appear to do nothing on the way to the pointer
+     leaving. */
+  .heading-anchor[data-copied="true"] {
+    @apply text-accent opacity-100;
+  }
+
   .prose-width {
     @apply max-w-[70ch];
   }
