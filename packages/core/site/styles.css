@@ -30,6 +30,9 @@
   --color-bad-bg: #fde7e7;
   --color-code-bg: #111111;
   --color-code-fg: #eeeeee;
+  /* Shared by a code block and the copy button overlapping its corner, so the
+     two can never round differently. */
+  --radius-code: 10px;
   /* Text on a filled accent button. Flips to near-black in dark mode, where
      the accent lightens for legibility against a dark page and white-on-accent
      would drop to ~2.3:1. */
@@ -167,13 +170,13 @@
   }
 
   .code-block {
-    @apply overflow-x-auto rounded-[10px] bg-code-bg px-4 py-3.5
+    @apply overflow-x-auto rounded-[var(--radius-code)] bg-code-bg px-4 py-3.5
            font-mono text-sm text-code-fg;
   }
 
   .code-block-light {
-    @apply overflow-x-auto rounded-[10px] border border-line bg-soft px-4 py-3.5
-           font-mono text-sm text-fg;
+    @apply overflow-x-auto rounded-[var(--radius-code)] border border-line bg-soft
+           px-4 py-3.5 font-mono text-sm text-fg;
   }
 
   /* Injected by the bundle: a non-scrolling parent for the <pre>, so the copy
@@ -185,15 +188,17 @@
 
   /* A bare icon in the block's top-right corner — no chrome of its own, so it
      reads as part of the block rather than as something sitting on top of it.
-     The 44px box is the tap target; only the icon inside it is visible. The
-     background matches the block so a long line scrolling underneath is hidden
-     rather than colliding with the glyph. */
-  /* `right-0`/`top-0` with extra width: the opaque box has to run all the way to
-     the block's inner edge, or a scrolling line shows a sliver of text past the
-     icon. The icon itself stays optically inset via the padding. */
+     Only the icon inside the tap target is visible; the box's background matches
+     the block so a long line scrolling underneath is hidden rather than
+     colliding with the glyph.
+
+     It sits at the block's inner edge (`top-0 right-0`) because anything less
+     lets a scrolling line show a sliver of text past the icon, and it takes the
+     block's own radius so the two corners it shares never read as a mix. The
+     icon stays optically inset via the padding. */
   .code-copy {
     @apply absolute top-0 right-0 z-10 flex h-12 w-14 cursor-pointer items-center
-           justify-center rounded-tr-[10px] border-0 pr-3 text-muted
+           justify-center rounded-[var(--radius-code)] border-0 pr-3 text-muted
            hover:text-fg;
   }
 
