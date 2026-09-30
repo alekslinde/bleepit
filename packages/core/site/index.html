@@ -195,7 +195,7 @@ checker.censor("That was a d0uche move"); // "That was a ****** move"</code></pr
 
 <section id="api" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">API reference</h2>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">ProfanityChecker</h3>
+  <h3 id="api-profanitychecker" class="mt-6 mb-2 text-[19px] font-semibold">ProfanityChecker</h3>
   <div class="table-scroll">
     <table class="data-table">
       <thead><tr><th scope="col">Method</th><th scope="col">Signature</th><th scope="col">Description</th></tr></thead>
@@ -209,12 +209,12 @@ checker.censor("That was a d0uche move"); // "That was a ****** move"</code></pr
       </tbody>
     </table>
   </div>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Factories &amp; singleton</h3>
+  <h3 id="api-factories" class="mt-6 mb-2 text-[19px] font-semibold">Factories &amp; singleton</h3>
 <pre class="code-block-light"><code>import { createChecker, isProfane, find, censor } from "@bleepit/core";
 
 const mine = createChecker({ languages: ["fr"] }); // isolated instance
 isProfane("bollocks"); // uses the shared default (English) instance</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Options</h3>
+  <h3 id="api-options" class="mt-6 mb-2 text-[19px] font-semibold">Options</h3>
   <div class="table-scroll">
     <table class="data-table">
       <thead><tr><th scope="col">Option</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Description</th></tr></thead>
@@ -256,26 +256,26 @@ const zh = createChecker({ languages: [], customWords: ["笨蛋"], wholeWord: fa
 
 <section id="guides" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Guides</h2>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Word boundaries (the Scunthorpe problem)</h3>
+  <h3 id="word-boundaries" class="mt-6 mb-2 text-[19px] font-semibold">Word boundaries (the Scunthorpe problem)</h3>
   <p class="prose-width">With <code class="code-inline">wholeWord: true</code> (default), matches must sit on word boundaries checked against the <em>original</em> text, so separators still split words while <code class="code-inline">a.r.s.e</code> is caught:</p>
 <pre class="code-block-light mt-2"><code>checker.isProfane("the class");      // false
 checker.isProfane("Scunthorpe");     // false
 checker.isProfane("arse about");     // true
 checker.isProfane("a.r.s.e about");  // true</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Whitelisting</h3>
+  <h3 id="whitelisting" class="mt-6 mb-2 text-[19px] font-semibold">Whitelisting</h3>
 <pre class="code-block-light"><code>const c = createChecker({ whitelist: ["arsenal"] });
 c.isProfane("arsenal"); // false</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Runtime updates</h3>
+  <h3 id="runtime-updates" class="mt-6 mb-2 text-[19px] font-semibold">Runtime updates</h3>
 <pre class="code-block-light"><code>checker.addWords(["heck"]);       // community-driven lists
 checker.removeWords(["bollocks"]); // tune false positives away</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Censoring</h3>
+  <h3 id="censoring" class="mt-6 mb-2 text-[19px] font-semibold">Censoring</h3>
 <pre class="code-block-light"><code>checker.censor("a d0uche move", "*"); // "a ****** move"
 checker.censor("oh bollocks", "#");   // "oh ########"</code></pre>
 </section>
 
 <section id="integrations" class="section">
   <h2 class="mb-3.5 text-[28px] font-bold">Integrations</h2>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">React (comment box)</h3>
+  <h3 id="integrations-react" class="mt-6 mb-2 text-[19px] font-semibold">React (comment box)</h3>
 <pre class="code-block-light"><code>import { useMemo, useState } from "react";
 import { createChecker } from "@bleepit/core";
 
@@ -291,7 +291,7 @@ function CommentBox() {
     &lt;/&gt;
   );
 }</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Express middleware</h3>
+  <h3 id="integrations-express" class="mt-6 mb-2 text-[19px] font-semibold">Express middleware</h3>
 <pre class="code-block-light"><code>import { createChecker } from "@bleepit/core";
 
 const checker = createChecker();
@@ -301,7 +301,7 @@ app.post("/comments", (req, res, next) =&gt; {
   }
   next();
 });</code></pre>
-  <h3 class="mt-6 mb-2 text-[19px] font-semibold">Deno</h3>
+  <h3 id="integrations-deno" class="mt-6 mb-2 text-[19px] font-semibold">Deno</h3>
 <pre class="code-block-light"><code>import { isProfane } from "npm:@bleepit/core";
 
 Deno.serve((req) =&gt; {
