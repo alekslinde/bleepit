@@ -84,8 +84,13 @@ jobs:
           # while implying to anyone reading that a token is what signs a
           # release.
           #
-          # Consumed by npm itself, not by changesets: turns on the provenance
-          # attestation that publishConfig requests in each manifest. Provenance
-          # is only attachable over OIDC, so a published version carrying an
-          # attestation is the signal that this path worked.
-          NPM_CONFIG_PROVENANCE: "true"
+          # No provenance env var is set here, because nothing in this path
+          # would read one. The publish runs through `pnpm publish` — changesets
+          # selects its client from the workspace tool, so npm is not involved —
+          # and pnpm takes provenance only from a `--provenance` flag, which
+          # changesets builds its own hardcoded arg list without. It does not
+          # read NPM_CONFIG_PROVENANCE. `publishConfig.provenance` in each
+          # manifest is therefore aspirational for now: it documents the intent
+          # and is what npm would honor, but pnpm does not derive the option
+          # from it. Releases publish over OIDC without an attestation until
+          # changesets can forward the flag.
