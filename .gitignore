@@ -1,2 +1,6 @@
 node_modules/
 dist/
+
+# Compiled from site/styles.css by `pnpm site:build`; the Pages workflow
+# regenerates it on every deploy.
+packages/core/site/styles.build.css
