@@ -173,14 +173,23 @@ function copyButton(text: () => string): HTMLButtonElement {
 if (navigator.clipboard) {
   // One button per tab group, copying whichever command is on show. The panels
   // are skipped below so they do not also get one each.
+  //
+  // The button goes beside the radio group, never inside it: a <button> among
+  // the options is announced as one of them, reading as a fifth package
+  // manager.
   document.querySelectorAll(".pm-tabs").forEach((tabs) => {
+    const group = tabs.querySelector('[role="radiogroup"]');
+    if (!group) return;
+
     const visible = () =>
       Array.from(tabs.querySelectorAll<HTMLPreElement>(".pm-panel")).find(
         (panel) => panel.offsetParent !== null,
       );
-    tabs.querySelector('[role="tablist"]')?.append(
-      copyButton(() => visible()?.textContent ?? ""),
-    );
+
+    const row = document.createElement("div");
+    row.className = "pm-bar";
+    group.replaceWith(row);
+    row.append(group, copyButton(() => visible()?.textContent ?? ""));
   });
 
   document.querySelectorAll("pre > code").forEach((code) => {

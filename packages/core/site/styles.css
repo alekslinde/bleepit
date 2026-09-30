@@ -191,10 +191,18 @@
            text-sm text-muted hover:text-fg;
   }
 
-  /* The bundle appends the copy button here, after the tabs; `order` keeps it
-     last and `ml-auto` pushes it to the opposite end of the row. */
-  [role="tablist"] > .code-copy {
-    @apply order-last ml-auto;
+  /* Injected by the bundle to sit the copy button beside the radio group rather than
+     inside it — inside it, the button would be announced as one of the options. */
+  /* Full width so `ml-auto` on the button has room to push against; without it
+     the bar shrinks to its contents and the two sit side by side. */
+  .pm-bar {
+    @apply flex w-full flex-wrap items-center gap-x-2;
+  }
+
+  /* `.code-copy` carries `order-first` to sit above a standalone block; in the
+     bar it follows the options instead, so that is reset here. */
+  .pm-bar > .code-copy {
+    @apply order-none ml-auto;
   }
 
   /* The radio is visually hidden, so its label carries the selected state and

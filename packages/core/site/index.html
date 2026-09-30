@@ -102,7 +102,7 @@
   <!-- Same tab set as the install section; `name` differs so the two groups do
        not drive each other. -->
   <div class="pm-tabs">
-    <div role="tablist" aria-label="Package manager" class="flex flex-wrap gap-1">
+    <div role="radiogroup" aria-label="Package manager" class="flex flex-wrap gap-1">
       <input type="radio" name="pm-hero" id="pm-hero-npm" class="sr-only" checked />
       <label for="pm-hero-npm" class="pm-tab">npm</label>
       <input type="radio" name="pm-hero" id="pm-hero-pnpm" class="sr-only" />
@@ -173,7 +173,7 @@
        labels come for free. Each panel is a code block in its own right, which
        is what lets the copy button treat it as one snippet. -->
   <div class="pm-tabs">
-    <div role="tablist" aria-label="Package manager" class="flex flex-wrap gap-1">
+    <div role="radiogroup" aria-label="Package manager" class="flex flex-wrap gap-1">
       <input type="radio" name="pm" id="pm-npm" class="sr-only" checked />
       <label for="pm-npm" class="pm-tab">npm</label>
       <input type="radio" name="pm" id="pm-pnpm" class="sr-only" />
