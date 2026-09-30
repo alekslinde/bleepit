@@ -6,6 +6,36 @@
 <title>bleepit — tiny, fast profanity checker for any JS runtime</title>
 <meta name="description" content="Keep profanity out of your product. A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
 <meta name="color-scheme" content="light dark" />
+<link rel="canonical" href="https://alekslinde.github.io/bleepit/" />
+<meta name="robots" content="index, follow" />
+
+<!-- Open Graph / Twitter. `og:image` is omitted rather than pointed at a file
+     that does not exist: a broken image URL degrades the card more than its
+     absence, which falls back to a text-only preview. -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://alekslinde.github.io/bleepit/" />
+<meta property="og:site_name" content="bleepit" />
+<meta property="og:title" content="bleepit — tiny, fast profanity checker for any JS runtime" />
+<meta property="og:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="bleepit — tiny, fast profanity checker for any JS runtime" />
+<meta name="twitter:description" content="A zero-dependency, isomorphic profanity checker with wordlists you control. One O(n) scan, leet/elongation/diacritic tolerant, en/es/fr/de starter lists built in." />
+
+<!-- Names the package as software rather than a generic page, so a search
+     result can show the licence and that it is free. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "@bleepit/core",
+  "description": "A zero-dependency, isomorphic profanity checker with wordlists you control.",
+  "url": "https://alekslinde.github.io/bleepit/",
+  "codeRepository": "https://github.com/alekslinde/bleepit",
+  "programmingLanguage": "TypeScript",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "runtimePlatform": ["Node.js", "Deno", "Bun", "Browser"]
+}
+</script>
 <link rel="stylesheet" href="./styles.build.css" />
 <!-- Applies the stored theme before first paint so a dark-mode visitor never
      sees a white flash. Inline by necessity: an external file would load too
@@ -75,13 +105,16 @@
     <a class="btn" href="#docs">Read the docs</a>
     <!-- Moved out of the nav: outbound links belong with the hero's other
          calls to action, and keep the bar down to the three page sections. -->
+    <!-- GitHub's Octicons mark. Its path is authored in a 16-unit space, so the
+         viewBox matches rather than carrying the source's scale(64). -->
     <a class="icon-link" href="https://github.com/alekslinde/bleepit" aria-label="bleepit on GitHub">
-      <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.8 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
+      <svg class="size-5" viewBox="0 0 16 16" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"/></svg>
     </a>
-    <!-- npm's wordmark is unreadable at icon size, so this is its square mark:
-         a filled tile with the glyph knocked out via `evenodd`. -->
     <a class="icon-link" href="https://www.npmjs.com/package/@bleepit/core" aria-label="@bleepit/core on npm">
-      <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" aria-hidden="true"><path d="M2 2h20v20H2V2zm4.5 4.5v11h5.25V9.25h2.75v8.25h2.5V9.25h1.5v8.25h1.5v-11H6.5z"/></svg>
+      <!-- Cropped to the wordmark's own bounds (the source pads it vertically),
+           so it reads at the same optical size as the circular GitHub mark
+           rather than shrinking to the middle third of a square box. -->
+      <svg class="w-5" viewBox="2 15 44 17.2" fill="currentColor" aria-hidden="true"><rect x="21.6" y="19.9" width="2.4" height="4.84"/><path d="M2,15V29.7H14.2v2.5H24V29.7H46V15ZM14.2,27.2H11.8V19.9H9.3v7.3H4.5V17.5h9.7Zm12.3,0H21.6v2.5H16.7V17.5h9.8Zm17.1,0H41.2V19.9H38.7v7.3H36.2V19.9H33.8v7.3H28.9V17.5H43.6Z"/></svg>
     </a>
   </div>
 </header>

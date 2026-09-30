@@ -101,12 +101,23 @@ area("demo-input").addEventListener("input", render);
 // handles switching it afterwards. Reading the computed state rather than the
 // attribute means the first click flips away from the OS preference, instead
 // of setting the theme the user is already looking at.
+let themingOff: number | undefined;
+
 document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
   button.addEventListener("click", () => {
     const dark = matchMedia("(prefers-color-scheme: dark)").matches;
     const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light");
     const next = current === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+
+    // Colours only animate while this class is set, so the switch eases but
+    // hover and focus stay instant. Removing it after the transition keeps the
+    // rule off everything else.
+    const root = document.documentElement;
+    root.classList.add("theming");
+    clearTimeout(themingOff);
+    themingOff = window.setTimeout(() => root.classList.remove("theming"), 250);
+
+    root.dataset.theme = next;
     try {
       localStorage.setItem("bleepit-theme", next);
     } catch {

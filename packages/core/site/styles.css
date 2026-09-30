@@ -107,6 +107,27 @@
     color: var(--color-fg);
   }
 
+  /* Ease the theme swap so a dark-room switch is not a white flash. Only the
+     token-driven properties transition, and only while `.theming` is set — the
+     bundle adds it for the length of the switch, so hover and focus stay
+     instant and the first paint is not animated.
+
+     `!important` because several of these properties are set by utilities that
+     would otherwise win on specificity. That also outranks the reduced-motion
+     block below, which is why this sits inside its own `no-preference` query
+     rather than relying on being overridden. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root.theming *,
+    :root.theming *::before,
+    :root.theming *::after {
+      transition:
+        background-color 200ms ease,
+        border-color 200ms ease,
+        color 200ms ease,
+        fill 200ms ease !important;
+    }
+  }
+
   /* One visible focus ring for every interactive element. Keyboard-only, so
      pointer users never see it on click. */
   :focus-visible {
