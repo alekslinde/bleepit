@@ -183,48 +183,28 @@
     @apply relative;
   }
 
-  /* The button overlaps the block's top-right corner. A long line still scrolls
-     beneath it, so it carries a gradient gutter (below) that fades the code out
-     rather than letting it vanish mid-glyph behind an opaque edge. */
+  /* A bare icon in the block's top-right corner — no chrome of its own, so it
+     reads as part of the block rather than as something sitting on top of it.
+     The 44px box is the tap target; only the icon inside it is visible. The
+     background matches the block so a long line scrolling underneath is hidden
+     rather than colliding with the glyph. */
+  /* `right-0`/`top-0` with extra width: the opaque box has to run all the way to
+     the block's inner edge, or a scrolling line shows a sliver of text past the
+     icon. The icon itself stays optically inset via the padding. */
   .code-copy {
-    @apply absolute top-1.5 right-1.5 z-10 flex size-11 cursor-pointer
-           items-center justify-center rounded-lg border text-muted
+    @apply absolute top-0 right-0 z-10 flex h-12 w-14 cursor-pointer items-center
+           justify-center rounded-tr-[10px] border-0 pr-3 text-muted
            hover:text-fg;
   }
 
-  /* Sits behind the button, spanning the full height of the block's first rows,
-     so the fade covers every line the button overlaps. `pointer-events-none`
-     keeps the code underneath selectable. */
-  .code-copy::before {
-    @apply pointer-events-none absolute top-[-0.375rem] right-[-0.375rem]
-           -z-10 h-[calc(100%+0.75rem)] w-[calc(100%+1.5rem)] content-[''];
-  }
-
-  /* Each block's own surface, so the button reads as part of it. The dark
-     blocks keep their palette regardless of theme, hence the fixed tokens
-     rather than `line`/`muted`. */
   .code-block-light + .code-copy {
-    @apply border-line bg-soft;
+    @apply bg-soft;
   }
 
-  .code-block-light + .code-copy::before {
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--color-soft) 2.25rem
-    );
-  }
-
+  /* The dark blocks keep their palette in both themes, so this takes the fixed
+     code tokens rather than `muted`/`fg`. */
   .code-block + .code-copy {
-    @apply border-white/20 bg-code-bg text-code-fg/70 hover:text-code-fg;
-  }
-
-  .code-block + .code-copy::before {
-    background: linear-gradient(
-      to right,
-      transparent,
-      var(--color-code-bg) 2.25rem
-    );
+    @apply bg-code-bg text-code-fg/60 hover:text-code-fg;
   }
 
   /* Swap the clipboard for a tick while the "copied" state is on. */
