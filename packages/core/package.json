@@ -1,6 +1,6 @@
 {
   "name": "@bleepit/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Keep profanity out of your product. Fast profanity checker with wordlists you control. Zero dependencies, isomorphic (Node/Browser/Deno/Bun/Workers).",
   "type": "module",
   "license": "Apache-2.0",
