@@ -63,10 +63,13 @@ jobs:
       # manifest, tsconfig, TypeScript sources and a node_modules — none of
       # which belong in a Pages artifact, and the last of which would bloat
       # every deploy.
+      # CNAME pins the custom domain to the deployment itself. Pages also stores
+      # the domain as a repo setting, but shipping it in the artifact means a
+      # deploy can never serve the site without it.
       - name: Assemble the deployable site
         run: |
           mkdir -p _site
-          cp packages/site/index.html packages/site/.nojekyll _site/
+          cp packages/site/index.html packages/site/.nojekyll packages/site/CNAME _site/
           cp packages/site/bleepit.bundle.js packages/site/styles.build.css _site/
 
       - uses: actions/configure-pages@v5
