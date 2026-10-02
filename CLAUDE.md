@@ -44,6 +44,7 @@ packages/site/          ← Docs site + live demo (private, never published)
   content/
     core.ts        ← The @bleepit/core live demo
   styles.css       ← Tailwind source: colour tokens + component classes
+  CNAME            ← Custom domain (bleepit.dev); copied into the Pages artifact
   bleepit.bundle.js ← Built output; regenerate with `pnpm site:build`, don't hand-edit
   styles.build.css  ← Built output; gitignored, regenerate with `pnpm site:build`
 ```
