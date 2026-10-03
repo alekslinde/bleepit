@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One page, one URL: the site is a single document and its section links are
+     fragments, which a sitemap does not list. No <lastmod>: a hand-maintained
+     date goes stale the first time the page changes without it, and a wrong
+     lastmod costs more with crawlers than an absent one. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://bleepit.dev/</loc>
+</url>
+</urlset>
