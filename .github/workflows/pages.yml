@@ -66,10 +66,15 @@ jobs:
       # CNAME pins the custom domain to the deployment itself. Pages also stores
       # the domain as a repo setting, but shipping it in the artifact means a
       # deploy can never serve the site without it.
+      #
+      # robots.txt and sitemap.xml must sit at the origin root to be honoured —
+      # a crawler reads them from /robots.txt and nowhere else — so they are
+      # copied flat alongside index.html rather than into a subdirectory.
       - name: Assemble the deployable site
         run: |
           mkdir -p _site
           cp packages/site/index.html packages/site/.nojekyll packages/site/CNAME _site/
+          cp packages/site/robots.txt packages/site/sitemap.xml _site/
           cp packages/site/bleepit.bundle.js packages/site/styles.build.css _site/
 
       - uses: actions/configure-pages@v5
